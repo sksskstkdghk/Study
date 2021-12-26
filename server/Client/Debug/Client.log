@@ -1,6 +1,0 @@
-﻿  Client.cpp
-C:\Users\sanghwa\Desktop\공부\server\Client\Client.cpp(19,1): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\um\WinSock2.h(1831): message : 'inet_addr' 선언을 참조하십시오.
-  Main.cpp
-  코드를 생성하고 있습니다...
-  Client.vcxproj -> C:\Users\sanghwa\Desktop\공부\server\Debug\Client.exe

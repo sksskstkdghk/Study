@@ -1,5 +1,0 @@
-﻿  ServerStudy.cpp
-C:\Users\sanghwa\Desktop\공부\server\server\ServerStudy.cpp(75,21): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\sanghwa\Desktop\공부\server\server\ServerStudy.cpp(106,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\sanghwa\Desktop\공부\server\server\ServerStudy.cpp(120,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
-  server.vcxproj -> C:\Users\sanghwa\Desktop\공부\server\Debug\Server.exe
