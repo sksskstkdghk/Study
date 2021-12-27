@@ -5,14 +5,25 @@
 #include <WinSock2.h>
 #include <thread>
 #include <string>
+#include <pthread.h>
+#include <mstcpip.h>
 
 #pragma comment(lib, "ws2_32")
 
 #define PORT 5293
 #define PACKET_SIZE 1024
-#define SERVER_IP "220.86.76.116"
+#define SERVER_IP "220.86.81.119"
 
 using namespace std;
+
+struct TEST
+{
+	string str;
+	int index;
+	float flo;
+
+	TEST() {}
+};
 
 class Client
 {
@@ -26,6 +37,9 @@ class Client
 
 	char sBuffer[PACKET_SIZE] = {};	//서버에서 받아올 메세지
 	char cMsg[PACKET_SIZE] = {};	//서버로 보낼 메세지
+
+	tcp_keepalive tcpkl;
+	DWORD dwError = 0L;
 
 public:
 	Client();

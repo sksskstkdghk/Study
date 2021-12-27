@@ -31,11 +31,16 @@ void Server::Init()
 	//IPPROTO_TCP는 TCP를 사용하겠다고 지정해 주는것
 	hListen = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
+	//optval = true;
+	//setsockopt(hListen, SOL_SOCKET, SO_KEEPALIVE, (const char*)&optval, sizeof(BOOL));
+
 	tListenAddr.sin_family = AF_INET;
+
 	//포트번호 설정(2byte내)
 	//htons : host to network short의 약자
 	//해당 함수를 거치면 반드시 빅엔디안 방식으로 데이터를 변환하여 설정한다.
 	tListenAddr.sin_port = htons(PORT);
+
 	//서버는 현재 동작되는 컴퓨터의 IP주소로 설정
 	//INADDR_ANY를 넣어주면 현재 컴퓨터의 IP주소로 설정함
 	//s_addr은 ipv4 internet address를 의미한다.
@@ -45,6 +50,7 @@ void Server::Init()
 	//즉 lsiten소켓의 역할은 접속승인만 해줌
 	//위에서 설정한 주소 정보를 WinSock2.h에 정의된 bind 함수를 이용하여 소켓에 묶어준다.
 	bind(hListen, (SOCKADDR*)&tListenAddr, sizeof(tListenAddr));
+
 	//listen함수는 연결을 수신하는 상태로 소켓의 상태를 변경한다. 즉 소켓을 접속 대기 상태로 만들어줌
 	//SOMAXCONN은 한번에 요청 가능한 최대 접속승인 수를 의미(int 최대값 21억~~)
 	listen(hListen, SOMAXCONN);
@@ -60,17 +66,35 @@ void Server::GetMsg(int index)
 {
 	//이름 받기
 	recv(clientDatas[index].second.clientSock, cBuffer, PACKET_SIZE, 0);
+
+	//TEST a;
+
+	//memcpy(&a, cBuffer, sizeof(cBuffer));
+
+	//a = *(TEST*)cBuffer;
+
 	clientDatas[index].first = cBuffer;
 
 	while (true)
 	{
+
 		ZeroMemory(cBuffer, PACKET_SIZE);
 		recv(clientDatas[index].second.clientSock, cBuffer, PACKET_SIZE, 0);
+
+		clientDatas[index].second.dwError = WSAGetLastError();
+
+		if (clientDatas[index].second.dwError == WSAECONNABORTED)
+		{
+			cout << clientDatas[index].first << "가 연결이 끊겼습니다." << endl;
+			continue;
+		}
 
 		char* temp = (char*)clientDatas[index].first.c_str();
 		InsertMsg(cBuffer, (char*)" : ", 3);
 		InsertMsg(cBuffer, temp, strlen(temp));
 		cout << cBuffer << endl;
+
+		//if(clientDatas[index].second.clientAddr.sin_addr)
 
 		for (int i = 0; i < clientDatas.size(); i++)
 		{
@@ -86,13 +110,23 @@ void Server::ClientAccept()
 {
 	int index = 0;
 
+	//clientDatas.resize(10);
+
 	while (true)
 	{
 		clientDatas.push_back(clientData("", CLIENT()));
+
 		//accept 함수를 이용하여 접속 요청을 수락해준다. 이 함수는 동기화된 방식으로 동작됨
 		//동기화된 방식이란 요청이 완료되기 전 까지는 계속 대기 상태에 놓이게 된다.
 		//접속 요청이 승인되면 연결된 소켓이 생성 후 리턴된다.
 		clientDatas[index].second.clientSock = accept(hListen, (SOCKADDR*)&clientDatas[index].second.clientAddr, &clientDatas[index].second.clientSize);
+
+		tcpkl.onoff = 1;
+		tcpkl.keepalivetime = 1000;	//1초 마다 신호를 보내겠다
+		tcpkl.keepaliveinterval = 1000; //신호를 보낸 후 응답이 없다면 1초마다 재 전송 하겠다.
+
+		WSAIoctl(clientDatas[index].second.clientSock, SIO_KEEPALIVE_VALS, &tcpkl,
+				 sizeof(tcp_keepalive), 0, 0, &clientDatas[index].second.dwError, NULL, NULL);
 
 		test = thread(&Server::GetMsg, this, index);
 		test.detach();

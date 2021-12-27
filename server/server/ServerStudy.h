@@ -6,6 +6,8 @@
 #include <vector>
 #include <Windows.h>
 #include <utility>
+#include <pthread.h>
+#include <mstcpip.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -19,11 +21,19 @@ struct CLIENT
 	SOCKET clientSock;
 	SOCKADDR_IN clientAddr = {};
 	int clientSize = sizeof clientAddr;
+	DWORD dwError = 0L;
 
-	CLIENT() {}
+	//CLIENT() {}
 };
 
-typedef pair<string, CLIENT> clientData;
+struct TEST
+{
+	string str;
+	int index;
+	float flo;
+
+	TEST() {}
+};
 
 class Server
 {
@@ -40,7 +50,12 @@ class Server
 
 	thread test;
 
+	typedef pair<string, CLIENT> clientData;
+
 	vector<clientData> clientDatas;
+	tcp_keepalive tcpkl;
+
+	BOOL optval;
 
 public:
 	Server();
