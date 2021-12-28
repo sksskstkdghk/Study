@@ -19,13 +19,6 @@ void Client::Init()
 	clientAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
 	connect(clientSock, (SOCKADDR*)&clientAddr, sizeof(clientAddr));
-
-	tcpkl.onoff = 1;
-	tcpkl.keepalivetime = 1000;	//1초 마다 신호를 보내겠다
-	tcpkl.keepaliveinterval = 1000; //신호를 보낸 후 응답이 없다면 1초마다 재 전송 하겠다.
-
-	WSAIoctl(clientSock, SIO_KEEPALIVE_VALS, &tcpkl,
-		sizeof(tcp_keepalive), 0, 0, &dwError, NULL, NULL);
 	
 	ZeroMemory(cMsg, PACKET_SIZE);
 	cout << "닉네임 설정: ";
@@ -39,6 +32,13 @@ void Client::Init()
 	memcpy(cMsg, &a, sizeof(TEST));*/
 
 	send(clientSock, cMsg, PACKET_SIZE, 0);
+
+	//tcpkl.onoff = 1;
+	//tcpkl.keepalivetime = 5000;	//1초 마다 신호를 보내겠다
+	//tcpkl.keepaliveinterval = 5000; //신호를 보낸 후 응답이 없다면 1초마다 재 전송 하겠다.
+
+	//WSAIoctl(clientSock, SIO_KEEPALIVE_VALS, &tcpkl,
+	//	sizeof(tcp_keepalive), 0, 0, &dwError, NULL, NULL);
 }
 
 void Client::SendMsg()
@@ -67,8 +67,8 @@ void Client::GetMsg()
 
 		if (dwError == WSAECONNABORTED)
 		{
-			cout << "가 연결이 끊겼습니다." << endl;
-			continue;
+			cout << "연결이 끊겼습니다." << endl;
+			break;
 		}
 
 		ZeroMemory(sBuffer, PACKET_SIZE);
@@ -85,6 +85,4 @@ void Client::End()
 	closesocket(clientSock);
 
 	WSACleanup();
-
-	cout << "atexit 호출" << endl;
 }

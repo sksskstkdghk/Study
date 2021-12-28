@@ -53,7 +53,11 @@ class Server
 	typedef pair<string, CLIENT> clientData;
 
 	vector<clientData> clientDatas;
+
 	tcp_keepalive tcpkl;
+
+	WSAEVENT sEvent;
+	WSANETWORKEVENTS netEvent;
 
 	BOOL optval;
 

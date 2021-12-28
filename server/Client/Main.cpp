@@ -28,7 +28,7 @@ void test()
 {
 	client->End();
 
-	pthread_cancel(pThed);
+	//pthread_cancel(pThed);
 
 	cout << "atexit È£Ãâ" << endl;
 }

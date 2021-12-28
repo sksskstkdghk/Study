@@ -64,46 +64,63 @@ void Server::Init()
 
 void Server::GetMsg(int index)
 {
-	//이름 받기
-	recv(clientDatas[index].second.clientSock, cBuffer, PACKET_SIZE, 0);
-
 	//TEST a;
 
 	//memcpy(&a, cBuffer, sizeof(cBuffer));
 
 	//a = *(TEST*)cBuffer;
 
-	clientDatas[index].first = cBuffer;
-
 	while (true)
 	{
-
 		ZeroMemory(cBuffer, PACKET_SIZE);
-		recv(clientDatas[index].second.clientSock, cBuffer, PACKET_SIZE, 0);
 
-		clientDatas[index].second.dwError = WSAGetLastError();
+		WSAWaitForMultipleEvents(1, &sEvent, TRUE, 1000, TRUE);
+
+		if (WSAEnumNetworkEvents(clientDatas[index].second.clientSock, sEvent, &netEvent) == SOCKET_ERROR)
+		{
+			cout << clientDatas[index].first << "소켓 에러가 발생하였습니다." << endl;
+			continue;
+		}
+
+		if (netEvent.lNetworkEvents == FD_CLOSE)
+		{
+			break;
+		}
+		else if (netEvent.lNetworkEvents == FD_READ)
+		{
+			recv(clientDatas[index].second.clientSock, cBuffer, PACKET_SIZE, 0);
+
+			//이름 설정
+			if (strcmp(clientDatas[index].first.c_str(), "") == 0)
+			{
+				clientDatas[index].first = cBuffer;
+				continue;
+			}
+
+			char* temp = (char*)clientDatas[index].first.c_str();
+			InsertMsg(cBuffer, (char*)" : ", 3);
+			InsertMsg(cBuffer, temp, strlen(temp));
+			cout << cBuffer << endl;
+
+			for (int i = 0; i < clientDatas.size(); i++)
+			{
+				if (strcmp(clientDatas[i].first.c_str(), clientDatas[index].first.c_str()) != 0)
+				{
+					send(clientDatas[i].second.clientSock, cBuffer, PACKET_SIZE, 0);
+				}
+			}
+		}
+
+		/*clientDatas[index].second.dwError = WSAGetLastError();
 
 		if (clientDatas[index].second.dwError == WSAECONNABORTED)
 		{
 			cout << clientDatas[index].first << "가 연결이 끊겼습니다." << endl;
 			continue;
-		}
-
-		char* temp = (char*)clientDatas[index].first.c_str();
-		InsertMsg(cBuffer, (char*)" : ", 3);
-		InsertMsg(cBuffer, temp, strlen(temp));
-		cout << cBuffer << endl;
-
-		//if(clientDatas[index].second.clientAddr.sin_addr)
-
-		for (int i = 0; i < clientDatas.size(); i++)
-		{
-			if (strcmp(clientDatas[i].first.c_str(), clientDatas[index].first.c_str()) != 0)
-			{
-				send(clientDatas[i].second.clientSock, cBuffer, PACKET_SIZE, 0);
-			}
-		}
+		}*/
 	}
+
+	closesocket(clientDatas[index].second.clientSock);
 }
 
 void Server::ClientAccept()
@@ -114,19 +131,26 @@ void Server::ClientAccept()
 
 	while (true)
 	{
-		clientDatas.push_back(clientData("", CLIENT()));
+		clientData temp;
 
 		//accept 함수를 이용하여 접속 요청을 수락해준다. 이 함수는 동기화된 방식으로 동작됨
 		//동기화된 방식이란 요청이 완료되기 전 까지는 계속 대기 상태에 놓이게 된다.
 		//접속 요청이 승인되면 연결된 소켓이 생성 후 리턴된다.
-		clientDatas[index].second.clientSock = accept(hListen, (SOCKADDR*)&clientDatas[index].second.clientAddr, &clientDatas[index].second.clientSize);
+		temp.second.clientSock = accept(hListen, (SOCKADDR*)&temp.second.clientAddr, &temp.second.clientSize);
 
-		tcpkl.onoff = 1;
-		tcpkl.keepalivetime = 1000;	//1초 마다 신호를 보내겠다
-		tcpkl.keepaliveinterval = 1000; //신호를 보낸 후 응답이 없다면 1초마다 재 전송 하겠다.
+		clientDatas.emplace_back(temp);
 
-		WSAIoctl(clientDatas[index].second.clientSock, SIO_KEEPALIVE_VALS, &tcpkl,
-				 sizeof(tcp_keepalive), 0, 0, &clientDatas[index].second.dwError, NULL, NULL);
+		sEvent = WSACreateEvent();
+		WSAEventSelect(clientDatas[index].second.clientSock, sEvent, FD_ACCEPT | FD_READ | FD_CLOSE);
+
+		//WSAEventSelect(hListen, sEvent, FD_ACCEPT | FD_READ | FD_CLOSE);
+
+		//tcpkl.onoff = 1;
+		//tcpkl.keepalivetime = 5000;	//1초 마다 신호를 보내겠다
+		//tcpkl.keepaliveinterval = 5000; //신호를 보낸 후 응답이 없다면 1초마다 재 전송 하겠다.
+
+		//WSAIoctl(clientDatas[index].second.clientSock, SIO_KEEPALIVE_VALS, &tcpkl, sizeof(tcp_keepalive), 0, 0, &clientDatas[index].second.dwError, NULL, NULL);
+		//WSAIoctl(hListen, SIO_KEEPALIVE_VALS, &tcpkl, sizeof(tcp_keepalive), 0, 0, &clientDatas[index].second.dwError, NULL, NULL);
 
 		test = thread(&Server::GetMsg, this, index);
 		test.detach();
