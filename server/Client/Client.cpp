@@ -19,6 +19,8 @@ void Client::Init()
 	clientAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
 	connect(clientSock, (SOCKADDR*)&clientAddr, sizeof(clientAddr));
+
+	dwError = 0;
 	
 	ZeroMemory(cMsg, PACKET_SIZE);
 	cout << "닉네임 설정: ";
@@ -32,6 +34,9 @@ void Client::Init()
 	memcpy(cMsg, &a, sizeof(TEST));*/
 
 	send(clientSock, cMsg, PACKET_SIZE, 0);
+
+	cEvent = WSACreateEvent();
+	WSAEventSelect(clientSock, cEvent, FD_READ | FD_CLOSE);
 
 	//tcpkl.onoff = 1;
 	//tcpkl.keepalivetime = 5000;	//1초 마다 신호를 보내겠다
@@ -51,19 +56,25 @@ void Client::SendMsg()
 
 		if (strcmp(cMsg, "exit") == 0)
 		{
-			exit(0);
+			break;
 		}
 
 		//대상 소켓으로 서버가 정보를 보내는 함수
 		send(clientSock, cMsg, strlen(cMsg), 0);
 	}
+
+	exit(0);
 }
 
 void Client::GetMsg()
 {
 	while (true)
 	{
-		dwError = WSAGetLastError();
+		ZeroMemory(sBuffer, PACKET_SIZE);
+
+		//dwError = WSAGetLastError();
+		WSAWaitForMultipleEvents(1, &cEvent, false, INFINITE, false);
+		WSAEnumNetworkEvents(clientSock, cEvent, &netEvent);
 
 		if (dwError == WSAECONNABORTED)
 		{
@@ -71,18 +82,29 @@ void Client::GetMsg()
 			break;
 		}
 
-		ZeroMemory(sBuffer, PACKET_SIZE);
+		if (netEvent.lNetworkEvents == FD_READ)
+		{
+			//대상 소켓으로부터 보내온 정보를 받아주는 함수
+			//받아오기전까지 해당 위치에서 프로그램이 멈춘다
+			recv(clientSock, sBuffer, PACKET_SIZE, 0);
 
-		//대상 소켓으로부터 보내온 정보를 받아주는 함수
-		recv(clientSock, sBuffer, PACKET_SIZE, 0);
+			cout << sBuffer << endl;
+		}
+		else if (netEvent.lNetworkEvents == FD_CLOSE)
+		{
+			cout << "서버가 종료되어 클라이언트를 종료합니다" << endl;
 
-		cout << sBuffer << endl;
+			break;
+		}
 	}
+
+	exit(0);
 }
 
-void Client::End()
+void Client::Close()
 {
 	closesocket(clientSock);
+	WSACloseEvent(cEvent);
 
 	WSACleanup();
 }

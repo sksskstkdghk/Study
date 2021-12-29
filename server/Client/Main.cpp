@@ -5,6 +5,7 @@ void test();
 //extern pthread_t pThed;
 pthread_t pThed;
 Client* client;
+shared_ptr<thread> thed;
 
 int main()
 {
@@ -13,11 +14,13 @@ int main()
 
 	atexit(test);
 
-	thread thed = thread(&Client::GetMsg, client);
+	thed = make_shared<thread>(&Client::GetMsg, client);
 	//pthread_t pThed;
 
-	pThed.p = thed.native_handle();
-	thed.detach();
+	//pthread_create(&pThed, NULL, &thed.native_handle(), NULL);
+
+	//pThed = thed.native_handle();
+	thed->detach();
 
 	client->SendMsg();
 
@@ -26,9 +29,12 @@ int main()
 
 void test()
 {
-	client->End();
+	client->Close();
 
-	//pthread_cancel(pThed);
+	//thed->~thread();
+	thed = nullptr;
 
-	cout << "atexit È£Ãâ" << endl;
+	//int temp = pthread_cancel(pThed);
+
+	delete client;
 }

@@ -1,13 +1,34 @@
 #include "ServerStudy.h"
+#include <sstream>
+
+void ExitProgram();
+
+Server* server;
+shared_ptr<thread> thed;
 
 int main()
 {
-	Server* server = new Server();
+	server = new Server();
 	server->Init();
 
-	thread(&Server::ClientAccept, server).detach();
+	atexit(ExitProgram);
+
+	thed = make_shared<thread>(&Server::EventPorcess, server);
+	thed->detach();
+
+	std::stringstream ss;
+	ss << thed->get_id();
 
 	server->SendMsg();
 
 	return 0;
+}
+
+void ExitProgram()
+{
+	server->ServerClose();
+
+	thed = nullptr;
+
+	delete server;
 }

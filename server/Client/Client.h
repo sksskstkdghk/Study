@@ -39,7 +39,10 @@ class Client
 	char cMsg[PACKET_SIZE] = {};	//서버로 보낼 메세지
 
 	tcp_keepalive tcpkl;
-	DWORD dwError = 0L;
+	int dwError;
+
+	WSAEVENT cEvent;
+	WSANETWORKEVENTS netEvent;
 
 public:
 	Client();
@@ -49,6 +52,6 @@ public:
 
 	void SendMsg();
 	void GetMsg();
-	void End();
+	void Close();
 };
 
