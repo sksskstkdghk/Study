@@ -16,13 +16,22 @@
 
 using namespace std;
 
-struct TEST
+struct TEST01
 {
-	string str;
+	char str[100] = {};
 	int index;
 	float flo;
 
-	TEST() {}
+	TEST01() {}
+};
+
+struct TEST02
+{
+	char str[100] = {};
+	INT64 index;
+	double dou;
+
+	TEST02() {}
 };
 
 class Client
@@ -36,13 +45,19 @@ class Client
 	SOCKADDR_IN clientAddr = {};
 
 	char sBuffer[PACKET_SIZE] = {};	//서버에서 받아올 메세지
-	char cMsg[PACKET_SIZE] = {};	//서버로 보낼 메세지
+	char cBuffer[PACKET_SIZE] = {};	//서버로 보낼 메세지
+	DWORD recvBytes, sendBytes;
+	//DWORD flag;
+	//WSABUF dataBuf;
+	WSAOVERLAPPED overlapped;
 
-	tcp_keepalive tcpkl;
+	//tcp_keepalive tcpkl;
 	int dwError;
 
 	WSAEVENT cEvent;
-	WSANETWORKEVENTS netEvent;
+	//WSANETWORKEVENTS netEvent;
+
+	bool clientHeart;
 
 public:
 	Client();

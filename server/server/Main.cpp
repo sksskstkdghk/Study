@@ -1,10 +1,9 @@
 #include "ServerStudy.h"
-#include <sstream>
 
 void ExitProgram();
 
 Server* server;
-shared_ptr<thread> thed;
+shared_ptr<thread> thed[2] = {};
 
 int main()
 {
@@ -13,11 +12,16 @@ int main()
 
 	atexit(ExitProgram);
 
-	thed = make_shared<thread>(&Server::EventPorcess, server);
-	thed->detach();
+	//thed = make_shared<thread>(&Server::GetEvent, server);
+	thed[0] = make_shared<thread>(&Server::RecvBuffer, server);
+	thed[1] = make_shared<thread>(&Server::ClientAccept, server);
 
-	std::stringstream ss;
-	ss << thed->get_id();
+	//thed->detach();
+
+	//server->ClientAccept();
+
+	for (int i = 0; i < 2; i++)
+		thed[i]->detach();
 
 	server->SendMsg();
 
@@ -28,7 +32,8 @@ void ExitProgram()
 {
 	server->ServerClose();
 
-	thed = nullptr;
+	for (int i = 0; i < 2; i++)
+		thed[i] = nullptr;
 
 	delete server;
 }

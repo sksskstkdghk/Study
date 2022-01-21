@@ -14,13 +14,13 @@ int main()
 
 	atexit(test);
 
-	thed = make_shared<thread>(&Client::GetMsg, client);
+	//thed = make_shared<thread>(&Client::GetMsg, client);
 	//pthread_t pThed;
 
 	//pthread_create(&pThed, NULL, &thed.native_handle(), NULL);
 
 	//pThed = thed.native_handle();
-	thed->detach();
+	//thed->detach();
 
 	client->SendMsg();
 
@@ -35,6 +35,11 @@ void test()
 	thed = nullptr;
 
 	//int temp = pthread_cancel(pThed);
+
+	while (true)
+	{
+
+	}
 
 	delete client;
 }

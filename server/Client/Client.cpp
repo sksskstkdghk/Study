@@ -10,9 +10,12 @@ Client::~Client()
 
 void Client::Init()
 {
+	clientHeart = true;
+
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	clientSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	//clientSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	clientSock = WSASocket(PF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
 	clientAddr.sin_family = AF_INET;
 	clientAddr.sin_port = htons(PORT);
@@ -21,22 +24,29 @@ void Client::Init()
 	connect(clientSock, (SOCKADDR*)&clientAddr, sizeof(clientAddr));
 
 	dwError = 0;
-	
-	ZeroMemory(cMsg, PACKET_SIZE);
-	cout << "닉네임 설정: ";
-	cin >> cMsg;
-
-	/*TEST a;
-	a.str = "이 건 가능하냐?";
-	a.index = 178131;
-	a.flo = 731.178;
-
-	memcpy(cMsg, &a, sizeof(TEST));*/
-
-	send(clientSock, cMsg, PACKET_SIZE, 0);
+	recvBytes = sendBytes = 0;
 
 	cEvent = WSACreateEvent();
-	WSAEventSelect(clientSock, cEvent, FD_READ | FD_CLOSE);
+	//WSAEventSelect(clientSock, cEvent, FD_READ | FD_CLOSE);
+	if (WSASetEvent(cEvent))
+	{
+		cout << "WSASetEvent 성공" << endl;
+	}
+	else
+	{
+		cout << "WSASetEvent 실패" << endl;
+		exit(0);
+	}
+	overlapped.hEvent = cEvent;
+
+	ZeroMemory(cBuffer, PACKET_SIZE);
+	send(clientSock, cBuffer, strlen(cBuffer), 0);
+
+	cout << "닉네임 설정: ";
+	cin >> cBuffer;
+
+	send(clientSock, cBuffer, strlen(cBuffer), 0);
+	//WSASend(clientSock, &dataBuf, 1, &sendBytes, flag, &overlapped, NULL);
 
 	//tcpkl.onoff = 1;
 	//tcpkl.keepalivetime = 5000;	//1초 마다 신호를 보내겠다
@@ -48,57 +58,80 @@ void Client::Init()
 
 void Client::SendMsg()
 {
-	while (true)
+	while (clientHeart)
 	{
-		ZeroMemory(cMsg, PACKET_SIZE);
+		ZeroMemory(cBuffer, PACKET_SIZE);
 		
-		cin.getline(cMsg, PACKET_SIZE);
+		cin.getline(cBuffer, PACKET_SIZE);
 
-		if (strcmp(cMsg, "exit") == 0)
+		if (strcmp(cBuffer, "exit") == 0)
 		{
-			break;
+			clientHeart = false;
+			continue;
 		}
 
-		//대상 소켓으로 서버가 정보를 보내는 함수
-		send(clientSock, cMsg, strlen(cMsg), 0);
+		//클라가 서버에게 정보를 보내거나 서버가 클라에게 데이터를 보내는 함수
+		//엄밀히 따지자면 해당 소켓에게 데이터를 전달하는 함수
+		send(clientSock, cBuffer, strlen(cBuffer), 0);
 	}
-
-	exit(0);
 }
 
 void Client::GetMsg()
 {
-	while (true)
+	while (clientHeart)
 	{
 		ZeroMemory(sBuffer, PACKET_SIZE);
 
-		//dwError = WSAGetLastError();
-		WSAWaitForMultipleEvents(1, &cEvent, false, INFINITE, false);
-		WSAEnumNetworkEvents(clientSock, cEvent, &netEvent);
+		recv(clientSock, sBuffer, strlen(sBuffer), NULL);
 
-		if (dwError == WSAECONNABORTED)
+		cout << sBuffer << endl;
+
+		/*if (WSARecv(clientSock, &dataBuf, 1, &recvBytes, &flag, &overlapped, NULL) == SOCKET_ERROR)
 		{
-			cout << "연결이 끊겼습니다." << endl;
-			break;
-		}
+			dwError = WSAGetLastError();
 
-		if (netEvent.lNetworkEvents == FD_READ)
-		{
-			//대상 소켓으로부터 보내온 정보를 받아주는 함수
-			//받아오기전까지 해당 위치에서 프로그램이 멈춘다
-			recv(clientSock, sBuffer, PACKET_SIZE, 0);
+			if (dwError == WSA_IO_PENDING)
+			{
+				WSAWaitForMultipleEvents(1, &cEvent, TRUE, WSA_INFINITE, FALSE);
 
-			cout << sBuffer << endl;
-		}
-		else if (netEvent.lNetworkEvents == FD_CLOSE)
-		{
-			cout << "서버가 종료되어 클라이언트를 종료합니다" << endl;
+				if (WSAGetOverlappedResult(clientSock, &overlapped, &recvBytes, FALSE, &flag))
+				{
 
-			break;
-		}
+				}
+			}
+			else if (dwError == WSAECONNABORTED)
+			{
+				cout << "서버가 종료되어 클라이언트를 종료합니다" << endl;
+
+				break;
+			}
+		}*/
+		
+		//int isError = WSAEnumNetworkEvents(clientSock, cEvent, &netEvent);
+
+		//if (isError == SOCKET_ERROR)
+		//{
+		//	cout << WSAGetLastError() << endl;
+
+		//	continue;
+		//}
+
+		//if (netEvent.lNetworkEvents == FD_READ)
+		//{
+		//	//대상 소켓으로부터 보내온 정보를 받아주는 함수
+		//	//받아오기전까지 해당 위치에서 프로그램이 멈춘다
+		//	//recv(clientSock, sBuffer, PACKET_SIZE, 0);
+		//	
+
+		//	cout << sBuffer << endl;
+		//}
+		//else if (netEvent.lNetworkEvents == FD_CLOSE)
+		//{
+		//	cout << "서버가 종료되어 클라이언트를 종료합니다" << endl;
+
+		//	break;
+		//}
 	}
-
-	exit(0);
 }
 
 void Client::Close()
