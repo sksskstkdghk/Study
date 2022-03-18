@@ -2,8 +2,10 @@
 
 void ExitProgram();
 
+#define OVERLAPPED_THREAD_SIZE 1
+
 Server* server;
-shared_ptr<thread> thed[2] = {};
+shared_ptr<thread> thed[OVERLAPPED_THREAD_SIZE] = {};
 
 int main()
 {
@@ -13,17 +15,18 @@ int main()
 	atexit(ExitProgram);
 
 	//thed = make_shared<thread>(&Server::GetEvent, server);
-	thed[0] = make_shared<thread>(&Server::RecvBuffer, server);
-	thed[1] = make_shared<thread>(&Server::ClientAccept, server);
+	//thed[0] = make_shared<thread>(&Server::RecvBuffer, server);
+	//thed[0] = make_shared<thread>(&Server::IOCPRecvBuffer, server);
+	thed[0] = make_shared<thread>(&Server::SendMsg, server);
 
 	//thed->detach();
 
 	//server->ClientAccept();
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < OVERLAPPED_THREAD_SIZE; i++)
 		thed[i]->detach();
 
-	server->SendMsg();
+	server->ClientAccept();
 
 	return 0;
 }

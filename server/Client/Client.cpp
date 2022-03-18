@@ -21,13 +21,41 @@ void Client::Init()
 	clientAddr.sin_port = htons(PORT);
 	clientAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
-	connect(clientSock, (SOCKADDR*)&clientAddr, sizeof(clientAddr));
+	cBuffer = new unsigned char[TEST_FILE_SIZE];
+
+	ZeroMemory(cBuffer, TEST_FILE_SIZE);
+	ZeroMemory(sBuffer, PACKET_SIZE + 4);
+
+	recvDataBuf.len = PACKET_SIZE + 4;
+	recvDataBuf.buf = sBuffer;
+
+	sendDataBuf.len = TEST_FILE_SIZE;
+	sendDataBuf.buf = (char*)cBuffer;
 
 	dwError = 0;
 	recvBytes = sendBytes = 0;
 
 	cEvent = WSACreateEvent();
+
+	ZeroMemory(&overlapped, sizeof(WSAOVERLAPPED));
+	overlapped.hEvent = cEvent;
+
+	connect(clientSock, (SOCKADDR*)&clientAddr, sizeof(clientAddr));
+
 	//WSAEventSelect(clientSock, cEvent, FD_READ | FD_CLOSE);
+
+	//WSASend(clientSock, &sendDataBuf, 1, &sendBytes, 0, &overlapped, NULL);
+
+	if (WSARecv(clientSock, &recvDataBuf, 1, &recvBytes, &flag, &overlapped, NULL) == SOCKET_ERROR)
+	{
+		cout << WSAGetLastError() << endl;
+
+		/*if (WSAGetLastError() == WSA_IO_PENDING)
+			cout << "new Client BackGround Recv Success" << endl;*/
+	}
+	else
+		cout << "BackGround Recv Failure" << endl;
+
 	if (WSASetEvent(cEvent))
 	{
 		cout << "WSASetEvent 성공" << endl;
@@ -37,16 +65,8 @@ void Client::Init()
 		cout << "WSASetEvent 실패" << endl;
 		exit(0);
 	}
-	overlapped.hEvent = cEvent;
-
-	ZeroMemory(cBuffer, PACKET_SIZE);
-	send(clientSock, cBuffer, strlen(cBuffer), 0);
 
 	cout << "닉네임 설정: ";
-	cin >> cBuffer;
-
-	send(clientSock, cBuffer, strlen(cBuffer), 0);
-	//WSASend(clientSock, &dataBuf, 1, &sendBytes, flag, &overlapped, NULL);
 
 	//tcpkl.onoff = 1;
 	//tcpkl.keepalivetime = 5000;	//1초 마다 신호를 보내겠다
@@ -58,21 +78,61 @@ void Client::Init()
 
 void Client::SendMsg()
 {
+	BOOL result = TRUE;
+
+	char asdf[100] = {};
+
+	int size = 0;
+
 	while (clientHeart)
 	{
-		ZeroMemory(cBuffer, PACKET_SIZE);
-		
-		cin.getline(cBuffer, PACKET_SIZE);
+		stream.open("메종드마왕 로고.png", ios::in | ios::binary);
 
-		if (strcmp(cBuffer, "exit") == 0)
+		//cin.getline(sendDataBuf.buf + 4, PACKET_SIZE);
+		cin.getline(asdf, 100);
+
+		/*if (strcmp(sendDataBuf.buf + 4, "exit") == 0)
 		{
 			clientHeart = false;
 			continue;
-		}
+		}*/
+
+		//sendBytes = strlen(sendDataBuf.buf + 4) + 4;
 
 		//클라가 서버에게 정보를 보내거나 서버가 클라에게 데이터를 보내는 함수
 		//엄밀히 따지자면 해당 소켓에게 데이터를 전달하는 함수
-		send(clientSock, cBuffer, strlen(cBuffer), 0);
+		//memcpy_s(sendDataBuf.buf, 4, &sendBytes, 4);
+
+		//stream.seekg(size);
+
+		stream.read(sendDataBuf.buf, TEST_FILE_SIZE);
+
+		cout << stream.tellg() << endl;
+
+		//size += PACKET_SIZE;
+
+		result =  WSAResetEvent(cEvent);
+
+		if(result == FALSE)
+			cout << "WSAResetEvent failed with error = " << WSAGetLastError() << endl;
+
+		ZeroMemory(&overlapped, sizeof(WSAOVERLAPPED));
+		overlapped.hEvent = cEvent;
+
+		//send(clientSock, cBuffer, a + 4, 0);
+		if (WSASend(clientSock, &sendDataBuf, 1, &sendBytes, 0, &overlapped, NULL) == SOCKET_ERROR)
+		{
+			if (WSAGetLastError() != ERROR_IO_PENDING)
+			{
+				printf("WSASend() failed with error %d\n", WSAGetLastError());
+				continue;
+			}
+		}
+		else
+		{
+			printf("WSASend() is OK! and %d만큼 데이터 보냄\n", sendBytes);
+			stream.close();
+		}
 	}
 }
 

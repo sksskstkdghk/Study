@@ -10,12 +10,12 @@ Server::~Server()
 	for (int i = 0; i < acceptClientSize; i++)
 	{
 		closesocket(clientDatas[i].second.clientSock);
-		WSACloseEvent(events[i]);
+		//WSACloseEvent(events[i]);
 	}
 
 	serverHeart = false;
 	ZeroMemory(clientDatas, sizeof(clientData) * acceptClientSize);
-	ZeroMemory(events, sizeof(WSAEVENT) * acceptClientSize);
+	//ZeroMemory(events, sizeof(WSAEVENT) * acceptClientSize);
 }
 
 void Server::Init()
@@ -66,24 +66,44 @@ void Server::Init()
 	//bind 함수는 소켓에 주소정보를 연결
 	//즉 lsiten소켓의 역할은 접속승인만 해줌
 	//위에서 설정한 주소 정보를 WinSock2.h에 정의된 bind 함수를 이용하여 소켓에 묶어준다.
-	bind(hListen, (SOCKADDR*)&tListenAddr, sizeof(tListenAddr));
+	bind(hListen, (SOCKADDR*)&tListenAddr, sizeof(SOCKADDR_IN));
 
 	//listen함수는 연결을 수신하는 상태로 소켓의 상태를 변경한다. 즉 소켓을 접속 대기 상태로 만들어줌
 	//SOMAXCONN은 한번에 요청 가능한 최대 접속승인 수를 의미(int 최대값 21억~~)
 	listen(hListen, SOMAXCONN);
 
-	ZeroMemory(cBuffer, PACKET_MAX_SIZE);
-	ZeroMemory(sBuffer, PACKET_MAX_SIZE);
+	//CreateIoCompletionPort = 커널 객체를 만들어 주는 함수
+	//IOCP객체를 만들 때 핸들 파라미터에 listen소켓을 넣어주는게 아닌 INVALID_HANDLE_VALUE를 넣어줘야 한다.
+	//마지막 매개변수가 0이라면 현재 컴퓨터에 존재하는 모든 cpu코어를 풀로 활용하겠다는 뜻
+	hIocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0);
 
-	//dataBUF.len = PACKET_MAX_SIZE;
-	//dataBUF.buf = sBuffer;
+	//cBuffer = new char[(PACKET_MAX_SIZE + 4) * 10];
+	//cBuffer = new unsigned char[PACKET_MAX_SIZE];
+	sBuffer = new char[(PACKET_MAX_SIZE + 4) * 10];
+
+	//ZeroMemory(cBuffer, (PACKET_MAX_SIZE + 4) * 10);
+	ZeroMemory(cBuffer, PACKET_MAX_SIZE);
+	ZeroMemory(sBuffer, (PACKET_MAX_SIZE + 4) * 10);
+
+	//recvDataBuf.len = (PACKET_MAX_SIZE + 4) * 10;
+	recvDataBuf.len = PACKET_MAX_SIZE;
+	recvDataBuf.buf = cBuffer;
+
+	sendDataBuf.len = (PACKET_MAX_SIZE + 4) * 10;
+	sendDataBuf.buf = sBuffer;
 
 	clientDatas[0].first = "server";
 	clientDatas[0].second.clientSock = hListen;
-	clientDatas[0].second.clientAddr = tListenAddr;
+	//clientDatas[0].second.clientAddr = tListenAddr;
 
-	events[0] = WSACreateEvent();
-	WSASetEvent(events[0]);
+	//events[0] = WSACreateEvent();
+
+	/*if (WSASetEvent(events[0]) == false)
+		cout << "WSASetEvent 실패" << endl;
+	else
+		cout << "WSASetEvent 성공" << endl;*/
+
+	//WSASetEvent(events[0]);
 	//WSAEventSelect(hListen, events[0], FD_ACCEPT);
 }
 
@@ -93,11 +113,11 @@ void Server::ServerClose()
 	for (int i = 1; i < acceptClientSize; i++)
 	{
 		closesocket(clientDatas[i].second.clientSock);
-		WSACloseEvent(events[i]);
+		//WSACloseEvent(events[i]);
 	}
 
 	ZeroMemory(clientDatas + 1, sizeof(clientData) * (acceptClientSize - 1));
-	ZeroMemory(events + 1, sizeof(WSAEVENT) * (acceptClientSize - 1));
+	//ZeroMemory(events + 1, sizeof(WSAEVENT) * (acceptClientSize - 1));
 }
 
 void Server::EventProcess(DWORD index, int error)
@@ -164,7 +184,7 @@ void Server::CloseEvent(int index)
 	SendAllMsg(sBuffer);
 	
 	closesocket(clientDatas[index].second.clientSock);
-	WSACloseEvent(events[index]);
+	//WSACloseEvent(events[index]);
 
 	acceptClientSize--;
 
@@ -173,61 +193,122 @@ void Server::CloseEvent(int index)
 
 	clientDatas[index].first = clientDatas[acceptClientSize].first;
 	clientDatas[index].second = clientDatas[acceptClientSize].second;
-	events[index] = events[acceptClientSize];
+	//events[index] = events[acceptClientSize];
 }
 
 void Server::RecvBuffer()
 {
 	int index = 1;
+	BOOL bResult = TRUE;
+
+	//filebuf = new unsigned char[TEST_FILE_SIZE];
 
 	while (serverHeart)
 	{
-		if (acceptClientSize < 2)
-			continue;
+		//if (acceptClientSize < 2)
+		//	continue;
 
-		if (index >= acceptClientSize)
-			index = 1;
+		////ZeroMemory(recvDataBuf.buf, PACKET_MAX_SIZE);
 
-		CLIENT* temp = &clientDatas[index].second;
-		string name = clientDatas[index].first;
+		//if ((index = WSAWaitForMultipleEvents(acceptClientSize, events, FALSE, WSA_INFINITE, FALSE)) == WSA_WAIT_FAILED)
+		//{
+		//	cout << "WSAWaitForMultipleEvents() failed " << WSAGetLastError() << endl;
+		//	continue;
+		//}
+		//else
+		//	cout << "WSAWaitForMultipleEvents() is OK" << endl;
 
-		dataBuf.buf = cBuffer;
-		dataBuf.len = PACKET_MAX_SIZE;
+		//if (index == WSA_WAIT_EVENT_0)
+		//{
+		//	WSAResetEvent(events[WSA_WAIT_EVENT_0]);
+		//	cout << "이건 서버야!" << endl;
+		//	continue;
+		//}
 
-		if (WSARecv(temp->clientSock, &dataBuf, 1, &temp->recvBytes, &flags, &temp->overlapped, NULL) == SOCKET_ERROR)
-		{
-			if (WSAGetLastError() == WSA_IO_PENDING)
-			{
-				cout << name << " BackGround Recv Success" << endl;
+		//bResult = WSAResetEvent(events[index - WSA_WAIT_EVENT_0]);
 
-				index = WSAWaitForMultipleEvents(acceptClientSize, events, TRUE, WSA_INFINITE, FALSE);
+		//if (bResult == FALSE)
+		//	cout << "WSAResetEvent failed with error = " << WSAGetLastError() << endl;
+		//
 
-				if (index == WSA_WAIT_FAILED)
-				{
-					cout << "Error - Wait Filure" << endl;
-					continue;
-				}
+		//stOverlappedEx* temp = &clientDatas[index - WSA_WAIT_EVENT_0].second.m_stRecvOverlappedEx;
+		//string name = clientDatas[index - WSA_WAIT_EVENT_0].first;
 
-				if (index == WSA_WAIT_EVENT_0) continue;
+		//if (WSAGetOverlappedResult(temp->clientSock, &temp->overlapped, &temp->recvBytes, FALSE, &flags) == TRUE)
+		//{
+		//	if (temp->recvBytes <= 0)
+		//		cout << "no data here" << endl;
+		//	else
+		//	{
+		//		if (temp->recvBytes < PACKET_MAX_SIZE)
+		//		{
+		//			cout << "더 작게 옴" << endl;
+		//		}
 
-				if (WSAGetOverlappedResult(temp->clientSock, &temp->overlapped, &temp->recvBytes, FALSE, &flags) == TRUE)
-				{
+		//		stream.open("test.txt", ios::app | ios::binary);
 
-				}
-			}
-			else
-			{
-				cout << "BackGround Recv Failure" << endl;
+		//		stream.write(cBuffer, temp->recvBytes);
 
-				
-			}
-		}
+		//		//memcpy_s(filebuf + temp->writeBytes, temp->recvBytes, recvDataBuf.buf, temp->recvBytes);
 
-		ZeroMemory(dataBuf.buf, PACKET_MAX_SIZE);
-		
-		index++;
+		//		temp->writeBytes += temp->recvBytes;
 
-		//Sleep(1000);
+		//		cout << "다운받은 총 크기: " << temp->writeBytes << endl;
+		//		stream.close();
+
+		//		//Sleep(100);
+		//	}
+
+
+		//	/*if (temp->recvBytes <= 0)
+		//		cout << "no data here" << endl;
+		//	else
+		//	{
+		//		int size;
+
+		//		memcpy_s(&size, 4, recvDataBuf.buf, 4);
+
+		//		cout << size << " " << recvDataBuf.buf + 4 << endl;
+
+		//		if (name.size() <= 0)
+		//		{
+		//			SetClientName(index);
+		//			name = clientDatas[index].first;
+		//		}
+		//		else
+		//			WriteData(*temp, name);
+		//	}*/
+
+		//	
+
+		//	//stream << recvDataBuf.buf;
+
+		//	flags = 0;
+		//	ZeroMemory(&temp->overlapped, sizeof(WSAOVERLAPPED));
+		//	temp->overlapped.hEvent = events[index];
+
+		//	/*if(TEST_FILE_SIZE - temp->writeBytes > PACKET_MAX_SIZE)
+		//		recvDataBuf.len = PACKET_MAX_SIZE;
+		//	else
+		//		recvDataBuf.len = TEST_FILE_SIZE - temp->writeBytes;*/
+
+		//	recvDataBuf.buf = (char*)cBuffer;
+
+		//	ZeroMemory(cBuffer, PACKET_MAX_SIZE);
+
+		//	if (WSARecv(temp->clientSock, &recvDataBuf, 1, &temp->recvBytes, &flags, &temp->overlapped, NULL) == SOCKET_ERROR)
+		//	{
+		//		if (WSAGetLastError() == WSA_IO_PENDING)
+		//		{
+		//			/*recvDataBuf.len = (PACKET_MAX_SIZE + 4) * 10;
+		//			recvDataBuf.buf = sBuffer;*/
+
+		//			cout << name << " BackGround Recv Success" << endl;
+		//		}
+		//	}
+		//	else
+		//		cout << "BackGround Recv Failure" << endl;
+		//}
 	}
 
 	//recv(clientDatas[index].second.clientSock, cBuffer, PACKET_MAX_SIZE, 0);
@@ -253,15 +334,73 @@ void Server::RecvBuffer()
 	//}
 }
 
+void Server::IOCPRecvBuffer()
+{
+	int index = 1;
+	BOOL bResult = TRUE;
+
+	while (serverHeart)
+	{
+		if (acceptClientSize < 2)
+			continue;
+
+		stOverlappedEx* temp = &clientDatas[index - WSA_WAIT_EVENT_0].second.m_stRecvOverlappedEx;
+		//string name = clientDatas[index - WSA_WAIT_EVENT_0].first;
+
+	}
+}
+
+void Server::WriteData(CLIENT client, const string name)
+{
+	int leftCount = 0;
+
+	for (int i =1; i <= recvCount; i++)
+	{
+		int a;
+
+		memcpy_s(&a, 4, recvDataBuf.buf + (i * (PACKET_MAX_SIZE + 4)), 4);
+
+		if (a - PACKET_MAX_SIZE > 0)
+			leftCount++;
+
+		//if(cbuffer)
+	}
+}
+
 void Server::SendBuffer()
 {
+	int index = 1;
 
+	DWORD sendBytes;
+
+	while (serverHeart)
+	{
+		if (acceptClientSize < 2)
+			continue;
+
+		if (index > acceptClientSize)
+			index = 1;
+
+		stOverlappedEx* temp = &clientDatas[index].second.m_stSendOverlappedEx;
+
+		if (WSASend(clientDatas[index].second.clientSock, &temp->m_wsaBuf, 1,
+			&sendBytes, 0, (LPWSAOVERLAPPED)&temp, NULL) == SOCKET_ERROR)
+		{
+			if (WSAGetLastError() != ERROR_IO_PENDING)
+			{
+				printf("WSASend() failed with error %d\n", WSAGetLastError());
+				continue;
+			}
+		}
+		else
+			printf("WSASend() is OK!\n");
+	}
 }
 
 void Server::SetClientName(int index)
 {
 	if (strcmp(clientDatas[index].first.c_str(), "") == 0)
-		clientDatas[index].first.insert(0, cBuffer);
+		clientDatas[index].first.insert(0, (char*)cBuffer + 4);
 }
 
 void Server::ClientAccept()
@@ -270,39 +409,52 @@ void Server::ClientAccept()
 
 	flags = 0;
 
+	SOCKADDR clientAddr;
+	int addrSize = 0;
+
 	while (serverHeart)
 	{
+		/*if (acceptClientSize > 11)
+			continue;*/
+
 		clientData temp;
+		
 
 		//accept 함수를 이용하여 접속 요청을 수락해준다. 이 함수는 동기화된 방식으로 동작됨
 		//동기화된 방식이란 요청이 완료되기 전 까지는 계속 대기 상태에 놓이게 된다.
 		//접속 요청이 승인되면 연결된 소켓이 생성 후 리턴된다.
-		temp.second.clientSock = accept(clientDatas[0].second.clientSock, (SOCKADDR*)&temp.second.clientAddr, &temp.second.addrSize);
+		temp.second.clientSock = accept(clientDatas[0].second.clientSock, &clientAddr, &addrSize);
 
-		events[acceptClientSize] = WSACreateEvent();
-		temp.second.overlapped.hEvent = events[acceptClientSize];
+		//clientDatas[acceptClientSize] = temp;
+		//events[acceptClientSize] = WSACreateEvent();
+		//ZeroMemory(&temp.second.overlapped, sizeof(WSAOVERLAPPED));
+		//temp.second.overlapped.hEvent = events[acceptClientSize];
 		//WSAEventSelect(temp.second.clientSock, temp.second.event, FD_READ | FD_CLOSE);
 
-		if (WSASetEvent(events[acceptClientSize]) == false)
-			cout << "WSASetEvent 실패" << endl;
-		else
-			cout << "WSASetEvent 성공" << endl;
+		//temp.second.overlapped.
+
+		//hIocp = CreateIoCompletionPort((HANDLE)temp.second.clientSock, hIocp, , 0);
 
 		clientDatas[acceptClientSize] = temp;
 
+		if (WSARecv(clientDatas[acceptClientSize].second.clientSock, &clientDatas[acceptClientSize].second.m_stRecvOverlappedEx.m_wsaBuf, 1,
+			&clientDatas[acceptClientSize].second.recvBytes, &flags, &clientDatas[acceptClientSize].second.overlapped, NULL) == SOCKET_ERROR)
+		{
+			if (WSAGetLastError() == WSA_IO_PENDING)
+				cout << "new Client BackGround Recv Success" << endl;
+		}
+		else
+			cout << "BackGround Recv Failure" << endl;
+
+		/*if (WSASetEvent(events[acceptClientSize]) == false)
+			cout << "WSASetEvent 실패" << endl;
+		else
+			cout << "WSASetEvent 성공" << endl;*/
+
 		//WSAEventSelect(hListen, sEvent, FD_ACCEPT | FD_READ | FD_CLOSE);
-
-		//이거 뭐 어케 사용하는건데...
-		//tcpkl.onoff = 1;
-		//tcpkl.keepalivetime = 5000;	//1초 마다 신호를 보내겠다
-		//tcpkl.keepaliveinterval = 5000; //신호를 보낸 후 응답이 없다면 1초마다 재 전송 하겠다.
-
-		//WSAIoctl(clientDatas[index].second.clientSock, SIO_KEEPALIVE_VALS, &tcpkl, sizeof(tcp_keepalive), 0, 0, &clientDatas[index].second.dwError, NULL, NULL);
-		//WSAIoctl(hListen, SIO_KEEPALIVE_VALS, &tcpkl, sizeof(tcp_keepalive), 0, 0, &clientDatas[index].second.dwError, NULL, NULL);
 
 		acceptClientSize++;
 	}
-	
 }
 
 void Server::SendTargetMsg(char* name, char* msg)
@@ -321,12 +473,7 @@ void Server::SendTargetMsg(char* name, char* msg)
 
 void Server::SendAllMsg(char* msg)
 {
-	//WSASend(clientDatas[0].second.clientSock, &dataBUF, )
-
-	/*for (int i = 0; i < acceptClientSize; i++)
-	{
-		send(clientDatas[i].second.clientSock, msg, PACKET_MAX_SIZE, 0);
-	}*/
+	
 }
 
 void Server::SendMsg()
@@ -335,8 +482,8 @@ void Server::SendMsg()
 
 	while (true)
 	{
-		ZeroMemory(name, PACKET_MAX_SIZE);
-		ZeroMemory(sBuffer, PACKET_MAX_SIZE);
+		/*ZeroMemory(name, PACKET_MAX_SIZE);
+		ZeroMemory(sBuffer, PACKET_MAX_SIZE);*/
 
 		//cin >> name;
 		cout << "보낼 대상 입력(전체:all, 서버 종료: exit): ";
@@ -344,14 +491,14 @@ void Server::SendMsg()
 
 		if (strcmp(name, "exit") == 0)
 		{
-			cout << "서버가 종료되었습니다." << endl;
+			cout << "서버가 종료되었습니다.\n";
 			InsertMsg(sBuffer, (char*)"서버가 종료되었습니다.", 0);
 
 			SendAllMsg(sBuffer);
 			break;
 		}
 
-		cout << endl << "보낼 메세지 입력: ";
+		cout <<  "\n보낼 메세지 입력: ";
 		cin.getline(sBuffer, PACKET_MAX_SIZE);
 
 		if (strcmp(name, "all") == 0)
