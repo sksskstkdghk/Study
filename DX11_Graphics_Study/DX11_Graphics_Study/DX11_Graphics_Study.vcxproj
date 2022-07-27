@@ -141,12 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Scripts\Initialize\D3DClass.cpp" />
     <ClCompile Include="Scripts\Initialize\GraphicsClass.cpp" />
     <ClCompile Include="Scripts\Initialize\InputClass.cpp" />
     <ClCompile Include="Scripts\Initialize\SystemClass.cpp" />
     <ClCompile Include="Scripts\wWinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Scripts\Initialize\D3DClass.h" />
     <ClInclude Include="Scripts\DxDefine.h" />
     <ClInclude Include="Scripts\Initialize\GraphicsClass.h" />
     <ClInclude Include="Scripts\Initialize\InputClass.h" />

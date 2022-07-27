@@ -8,21 +8,26 @@ public class TileMap : MonoBehaviour
     public Material mat;
     public Player player;
     public List<List<Tile>> tiles;
-    //public Fog fog;
+    public Color[] fogColors;
+    public Texture2D fogTex;
 
     float time;
     const float computeTime = 0.2f;
 
-    // Start is called before the first frame update
-    void Start()
+    const int tileWidth  = 50;
+    const int tileHeight = 50;
+
+    private void Awake()
     {
         //fog = transform.GetChild(0).GetComponent<Fog>();
-        tiles = new List<List<Tile>>(50);
+        tiles = new List<List<Tile>>(tileHeight);
+        fogColors = new Color[tileWidth * tileHeight];
+        //fogTex = FindObjectOfType<Fog>().texture;
 
-        for (int i =0; i<50; i++)
+        for (int i = 0; i < tileHeight; i++)
         {
-            tiles.Add(new List<Tile>(50));
-            for (int j = 0; j < 50; j++)
+            tiles.Add(new List<Tile>(tileWidth));
+            for (int j = 0; j < tileWidth; j++)
             {
                 float height = -0.4f;
 
@@ -32,14 +37,21 @@ public class TileMap : MonoBehaviour
                 GameObject tile = Instantiate(tilePrefab, transform);
                 tile.transform.localPosition = new Vector3((float)j + 0.5f, height, (float)i + 0.5f);
 
+                fogColors[i + j * tileWidth] = new Color(0, 0, 0, 1);
                 tiles[i].Add(tile.GetComponent<Tile>());
                 tiles[i][j].Init();
             }
         }
 
-        mat.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
+        //mat.color = new Color(0.0f, 0.0f, 0.0f, 1.0f);
 
         time = 0.0f;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
@@ -51,17 +63,22 @@ public class TileMap : MonoBehaviour
         {
             TilesInit();
             ComputeView();
+
+            fogTex.SetPixels(fogColors);
+            fogTex.Apply();
+
             time = 0.0f;
         }
     }
 
     void TilesInit()
     {
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < tileHeight; i++)
         {
-            for (int j = 0; j < 50; j++)
+            for (int j = 0; j < tileWidth; j++)
             {
                 tiles[i][j].PlayInit();
+                fogColors[i + j * tileWidth] = new Color(0, 0, 0, 1);
             }
         }
     }
@@ -79,8 +96,8 @@ public class TileMap : MonoBehaviour
 
         min.x = (min.x >= 0) ? min.x : 0;
         min.y = (min.y >= 0) ? min.y : 0;
-        max.x = (max.x < 50) ? max.x : 50;
-        max.y = (max.y < 50) ? max.y : 50;
+        max.x = (max.x < tileWidth) ? max.x : tileWidth;
+        max.y = (max.y < tileHeight) ? max.y : tileHeight;
 
         Vector2 visit, target;
         for (int i = (int)min.x; i < (int)max.x; i++)
@@ -102,8 +119,11 @@ public class TileMap : MonoBehaviour
                 if (IsObsRayHit(i, j, x, z))
                     continue;
 
-                if (IsViewTile(i, j, x, z))
+                //if (IsViewTile(i, j, x, z))
+                //{
                     tiles[j][i].visit = Visit.CURRENT;
+                    fogColors[i + j * tileWidth] = new Color(0, 0, 0, 0);
+                //}
 
                 tiles[j][i].SetColor();
             }
@@ -160,7 +180,7 @@ public class TileMap : MonoBehaviour
 
         RaycastHit hit;
 
-        Physics.RaycastAll()
+        //Physics.RaycastAll()
 
         if (Physics.Raycast(user, dir, out hit, dis, LayerMask.GetMask("Obstacle")))
         {
