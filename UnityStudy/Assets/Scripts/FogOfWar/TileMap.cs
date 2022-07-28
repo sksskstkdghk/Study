@@ -11,6 +11,8 @@ public class TileMap : MonoBehaviour
     public Color[] fogColors;
     public Texture2D fogTex;
 
+    MaterialPropertyBlock matBlock;
+
     float time;
     const float computeTime = 0.2f;
 
@@ -22,6 +24,7 @@ public class TileMap : MonoBehaviour
         //fog = transform.GetChild(0).GetComponent<Fog>();
         tiles = new List<List<Tile>>(tileHeight);
         fogColors = new Color[tileWidth * tileHeight];
+        matBlock = new MaterialPropertyBlock();
         //fogTex = FindObjectOfType<Fog>().texture;
 
         for (int i = 0; i < tileHeight; i++)
@@ -29,7 +32,7 @@ public class TileMap : MonoBehaviour
             tiles.Add(new List<Tile>(tileWidth));
             for (int j = 0; j < tileWidth; j++)
             {
-                float height = -0.4f;
+                float height = 10.0f;
 
                 //if (j == 25)
                 //    height = 1.0f;
@@ -39,7 +42,7 @@ public class TileMap : MonoBehaviour
 
                 fogColors[i + j * tileWidth] = new Color(0, 0, 0, 1);
                 tiles[i].Add(tile.GetComponent<Tile>());
-                tiles[i][j].Init();
+                tiles[i][j].Init(matBlock);
             }
         }
 
@@ -77,8 +80,13 @@ public class TileMap : MonoBehaviour
         {
             for (int j = 0; j < tileWidth; j++)
             {
-                tiles[i][j].PlayInit();
-                fogColors[i + j * tileWidth] = new Color(0, 0, 0, 1);
+                tiles[j][i].PlayInit();
+                fogColors[i + j * tileWidth] = Color.black;
+
+                //if (tiles[j][i].visit == Visit.NONE)
+                //    fogColors[i + j * tileWidth] = Color.black;
+                //else if(tiles[j][i].visit == Visit.BEFORE)
+                //    fogColors[i + j * tileWidth] = new Color(0, 0, 0, 0.8f);
             }
         }
     }
@@ -96,16 +104,19 @@ public class TileMap : MonoBehaviour
 
         min.x = (min.x >= 0) ? min.x : 0;
         min.y = (min.y >= 0) ? min.y : 0;
-        max.x = (max.x < tileWidth) ? max.x : tileWidth;
-        max.y = (max.y < tileHeight) ? max.y : tileHeight;
+        max.x = (max.x < tileWidth) ? max.x : tileWidth - 1;
+        max.y = (max.y < tileHeight) ? max.y : tileHeight - 1;
 
         Vector2 visit, target;
-        for (int i = (int)min.x; i < (int)max.x; i++)
+        for (int i = (int)min.x; i <= (int)max.x; i++)
         {
-            for (int j = (int)min.y; j < (int)max.y; j++)
+            for (int j = (int)min.y; j <= (int)max.y; j++)
             {
                 visit = new Vector2(i, j);
                 target = new Vector2(x, z);
+
+                if (tiles[j][i].visit == Visit.CURRENT)
+                    continue;
 
                 //높이가 높은 타일은 넘어감
                 if (tiles[j][i].transform.localPosition.y > player.transform.localPosition.y - 1.0f)
@@ -116,14 +127,14 @@ public class TileMap : MonoBehaviour
                     continue;
 
                 //레이 쐈더니 장애물이 있으면 넘어감
-                if (IsObsRayHit(i, j, x, z))
-                    continue;
+                //if (IsObsRayHit(i, j, x, z))
+                //    continue;
 
-                //if (IsViewTile(i, j, x, z))
-                //{
+                if (IsViewTile(i, j, x, z))
+                {
                     tiles[j][i].visit = Visit.CURRENT;
                     fogColors[i + j * tileWidth] = new Color(0, 0, 0, 0);
-                //}
+                }
 
                 tiles[j][i].SetColor();
             }
