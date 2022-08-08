@@ -10,6 +10,7 @@ public class TileMap : MonoBehaviour
     public List<List<Tile>> tiles;
     public Color[] fogColors;
     public Texture2D fogTex;
+    public RenderTexture renderTex;
 
     MaterialPropertyBlock matBlock;
 
@@ -67,11 +68,16 @@ public class TileMap : MonoBehaviour
             TilesInit();
             ComputeView();
 
-            fogTex.SetPixels(fogColors);
-            fogTex.Apply();
+            //Graphics.Blit(fogTex, renderTex);
 
             time = 0.0f;
         }
+    }
+
+    public void UpdateFog()
+    {
+        fogTex.SetPixels(fogColors);
+        fogTex.Apply();
     }
 
     void TilesInit()
@@ -81,7 +87,7 @@ public class TileMap : MonoBehaviour
             for (int j = 0; j < tileWidth; j++)
             {
                 tiles[j][i].PlayInit();
-                fogColors[i + j * tileWidth] = Color.black;
+                fogColors[i + j * tileWidth] = new Color(0, 0, 0, 1);
 
                 //if (tiles[j][i].visit == Visit.NONE)
                 //    fogColors[i + j * tileWidth] = Color.black;
@@ -126,15 +132,16 @@ public class TileMap : MonoBehaviour
                 if (Vector2.Distance(target, visit) > player.view)
                     continue;
 
-                //레이 쐈더니 장애물이 있으면 넘어감
+                //단순한 레이캐스트
                 //if (IsObsRayHit(i, j, x, z))
                 //    continue;
 
-                if (IsViewTile(i, j, x, z))
-                {
-                    tiles[j][i].visit = Visit.CURRENT;
-                    fogColors[i + j * tileWidth] = new Color(0, 0, 0, 0);
-                }
+                //타일 전진 알고리즘
+                if (!IsViewTile(i, j, x, z))
+                    continue;
+
+                tiles[j][i].visit = Visit.CURRENT;
+                fogColors[i + j * tileWidth] = new Color(0, 0, 0, 0);
 
                 tiles[j][i].SetColor();
             }

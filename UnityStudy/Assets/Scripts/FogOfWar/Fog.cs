@@ -17,6 +17,9 @@ public class Fog : MonoBehaviour
         map.fogTex = texture;
         GetComponent<Terrain>().materialTemplate.mainTexture = texture;
 
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
         texture.SetPixels(map.fogColors);
         texture.Apply();
     }
