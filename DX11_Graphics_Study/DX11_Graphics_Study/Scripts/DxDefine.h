@@ -7,6 +7,13 @@
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
 
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "DirectXTex.lib")
+//#pragma comment(lib, "d3dx11.lib")
+//#pragma comment(lib, "d3dx10.lib")
+//#pragma comment(lib, "d3dx9.lib")
+
 //미리 컴파일된 헤더파일 장소
 //싱글톤, dxapi내부 변수 전역선언 등으로 사용
 
@@ -19,10 +26,18 @@
 #include <memory.h>
 #include <tchar.h>
 
-using namespace std;
-
 #define Win_Width	0
 #define Win_Height	0
+
+#include <dxgi.h>
+#include <d3dcommon.h>
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include <d3d9types.h>
+#include <d3dcompiler.h>
+
+using namespace std;
+using namespace DirectX;
 
 //Initialize
 //#include "Initialize/GraphicsClass.h"

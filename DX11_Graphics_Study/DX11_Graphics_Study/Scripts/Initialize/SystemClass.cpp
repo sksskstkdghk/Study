@@ -1,6 +1,6 @@
 #include "../DxDefine.h"
-#include "InputClass.h"
-#include "GraphicsClass.h"
+#include "../Input/InputClass.h"
+#include "../Graphics/GraphicsClass.h"
 #include "SystemClass.h"
 
 //private-------------------------------------------------------------------
