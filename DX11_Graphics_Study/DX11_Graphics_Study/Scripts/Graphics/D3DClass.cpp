@@ -10,7 +10,11 @@ D3DClass::D3DClass()
 	depthStencilBuffer = nullptr;
 	depthStencilState = nullptr;
 	depthStencilView = nullptr;
+	depthDisabledStencilState = nullptr;
 	rasterState = nullptr;
+
+	alphaEnableBlendingState = nullptr;
+	alphaDisableBlendingState = nullptr;
 }
 
 D3DClass::D3DClass(const D3DClass& d3dClass)
@@ -68,6 +72,14 @@ bool D3DClass::Init(int screenWidth, int screenHeight, bool isVSYNC, HWND hwnd, 
 	cout << "뷰포트 초기화 시작\n";
 	ViewportInit();
 	cout << "뷰포트 초기화 성공\n";
+
+	cout << "블랜드 상태 초기화 시작\n";
+	if (!BlendStateInit())
+	{
+		cout << "블랜드 상태 초기화 실패\n";
+		return false;
+	}
+	cout << "블랜드 상태 초기화 성공\n";
 
 	//투영 행렬 설정
 	fieldOfView = XM_PI / 4.0f;
@@ -248,7 +260,8 @@ bool D3DClass::BackbufferInit(bool isFullScreen, HWND hwnd)
 	//추가 옵션 플래그 사용 안함
 	swapChainDesc.Flags = 0;
 
-	D3D_FEATURE_LEVEL featureLevel[4] = {
+	D3D_FEATURE_LEVEL featureLevel[5] = {
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -377,6 +390,75 @@ bool D3DClass::DepthStencilInit()
 	return true;
 }
 
+bool D3DClass::DepthDisabledStencilInit()
+{
+	HRESULT result;
+
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+
+	//스텐실 상태 초기화
+	ZeroMemory(&depthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	//스텐실 상태의 description을 설정
+	depthStencilDesc.DepthEnable = false;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+
+	//stencil operations if pixel is front-facing.
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	//stencil operations if pixel is back-facing.
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	//깊이-스텐실 상태 생성
+	result = device->CreateDepthStencilState(&depthStencilDesc, &depthDisabledStencilState);
+	if (FAILED(result))
+	{
+		cout << "깊이-스텐실 상태 생성 실패\n";
+		return false;
+	}
+	return true;
+}
+
+bool D3DClass::BlendStateInit()
+{
+	HRESULT result;
+	D3D11_BLEND_DESC blendStateDesc;
+
+	ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
+
+	blendStateDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendStateDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendStateDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendStateDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendStateDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendStateDesc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+
+	result = device->CreateBlendState(&blendStateDesc, &alphaEnableBlendingState);
+	if (FAILED(result))
+		return false;
+
+	blendStateDesc.RenderTarget[0].BlendEnable = FALSE;
+
+	result = device->CreateBlendState(&blendStateDesc, &alphaDisableBlendingState);
+	if (FAILED(result))
+		return false;
+
+	return true;
+}
+
 //래스터화기 초기화
 bool D3DClass::RasterInit()
 {
@@ -435,6 +517,24 @@ void D3DClass::ShutDown()
 	//종료 전 윈도우 모드로 바꾸지 않으면 스왑체인을 할당 해제할 때 예외가 발생한다.
 	if (swapChain)
 		swapChain->SetFullscreenState(false, nullptr);
+
+	if (alphaEnableBlendingState)
+	{
+		alphaDisableBlendingState->Release();
+		alphaDisableBlendingState = nullptr;
+	}
+
+	if (alphaDisableBlendingState)
+	{
+		alphaDisableBlendingState->Release();
+		alphaDisableBlendingState = nullptr;
+	}
+
+	if (depthDisabledStencilState)
+	{
+		depthDisabledStencilState->Release();
+		depthDisabledStencilState = nullptr;
+	}
 
 	if (rasterState)
 	{
@@ -546,4 +646,38 @@ void D3DClass::GetVideoCardInfo(char* cardName, int& memory)
 {
 	strcpy_s(cardName, 128, videoCardDescription);
 	memory = videoCardMemory;
+}
+
+void D3DClass::TurnZbufferOn()
+{
+	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+}
+
+void D3DClass::TurnZbufferOff()
+{
+	deviceContext->OMSetDepthStencilState(depthDisabledStencilState, 1);
+}
+
+void D3DClass::TurnOnAlphaBlending()
+{
+	float blendFactor[4];
+
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	deviceContext->OMSetBlendState(alphaEnableBlendingState, blendFactor, 0xffffffff);
+}
+
+void D3DClass::TurnOffAlphaBlending()
+{
+	float blendFactor[4];
+
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	deviceContext->OMSetBlendState(alphaDisableBlendingState, blendFactor, 0xffffffff);
 }

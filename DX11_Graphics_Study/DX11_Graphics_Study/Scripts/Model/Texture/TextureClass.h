@@ -7,6 +7,9 @@ class TextureClass
 private:
 	ID3D11ShaderResourceView* texture;
 
+private:
+	HRESULT LoadTexture(WCHAR* fileName, ScratchImage* image);
+
 public:
 	TextureClass();
 	TextureClass(const TextureClass& textureClass);

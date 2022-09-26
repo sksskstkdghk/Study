@@ -249,7 +249,7 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	MatrixBufferType* dataPtr;
 	unsigned int bufferNumber;
 
-	//행렬을 tranpos하여 셰이더에서 사용할 수 있게 한다.
+	//행렬을 transpos하여 셰이더에서 사용할 수 있게 한다.
 	worldMatrix = XMMatrixTranspose(worldMatrix);
 	viewMatrix = XMMatrixTranspose(viewMatrix);
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);

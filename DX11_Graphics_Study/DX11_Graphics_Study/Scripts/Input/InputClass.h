@@ -1,5 +1,7 @@
 #pragma once
 
+#include <dinput.h>
+
 class InputClass
 {
 private:

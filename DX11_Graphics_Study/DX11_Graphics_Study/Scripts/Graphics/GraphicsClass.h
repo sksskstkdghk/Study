@@ -4,9 +4,11 @@
 #include "CameraClass.h"
 #include "../Model/ModelClass.h"
 //#include "../Shader/Class/ColorShaderClass.h"
-//#include "../Shader/Class/TextureShaderClass.h"
+#include "../Shader/Class/TextureShaderClass.h"
 
 #include "LightClass.h"
+#include "BitmapClass.h"
+#include "TextClass.h"
 #include "../Shader/Class/LightShaderClass.h"
 
 const bool FULL_SCREEN = false;		//전체화면 여부
@@ -19,13 +21,16 @@ class GraphicsClass
 private:
 	D3DClass* D3D;
 	CameraClass* camera;
-	ModelClass* model;
+	//ModelClass* model;
 	//ColorShaderClass* colorShader;
-	//TextureShaderClass* shaderClass;
-	LightShaderClass* shaderClass;
-	LightClass* light;
+	//TextureShaderClass* textureClass;
+	//LightShaderClass* shaderClass;
+	//LightClass* light;
+	TextClass* text;
 
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	//BitmapClass* bitmap;
+
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 
 private:
 	bool Render(float rotation);

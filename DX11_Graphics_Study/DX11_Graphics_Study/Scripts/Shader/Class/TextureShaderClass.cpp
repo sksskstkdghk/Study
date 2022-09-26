@@ -2,10 +2,6 @@
 
 TextureShaderClass::TextureShaderClass()
 {
-    vertexShader = nullptr;
-    pixelShader = nullptr;
-    layout = nullptr;
-    matrixBuffer = nullptr;
     samplerState = nullptr;
 }
 

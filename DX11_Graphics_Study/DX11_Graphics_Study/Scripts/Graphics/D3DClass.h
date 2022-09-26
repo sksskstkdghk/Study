@@ -13,9 +13,11 @@ private:
 	ID3D11DeviceContext* deviceContext;
 	ID3D11RenderTargetView* renderTargetView;
 	ID3D11Texture2D* depthStencilBuffer;
-	ID3D11DepthStencilState* depthStencilState;
+	ID3D11DepthStencilState* depthStencilState, *depthDisabledStencilState;
+	ID3D11BlendState* alphaEnableBlendingState, * alphaDisableBlendingState;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RasterizerState* rasterState;
+
 	XMMATRIX projectionMatrix;
 	XMMATRIX worldMatrix;
 	XMMATRIX orthoMatrix;
@@ -32,6 +34,8 @@ public:
 	bool DisplayInit(bool isVSYNC);
 	bool BackbufferInit(bool isFullScreen, HWND hwnd);
 	bool DepthStencilInit();
+	bool DepthDisabledStencilInit();
+	bool BlendStateInit();
 	bool RasterInit();
 	void ViewportInit();
 	void ShutDown();
@@ -48,6 +52,10 @@ public:
 
 	void GetVideoCardInfo(char* cardName, int& memory);
 
+	void TurnZbufferOn();
+	void TurnZbufferOff();
 
+	void TurnOnAlphaBlending();
+	void TurnOffAlphaBlending();
 };
 

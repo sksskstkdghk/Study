@@ -44,6 +44,7 @@ XMFLOAT3 CameraClass::GetRotation()
 	return XMFLOAT3(rotationX, rotationY, rotationZ);
 }
 
+//카메라 세팅
 void CameraClass::Render()
 {
 	XMVECTOR up, position, lookAt;

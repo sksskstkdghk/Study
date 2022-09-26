@@ -51,6 +51,18 @@
     <ClCompile Include="Scripts\Graphics\LightClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Scripts\Graphics\BitmapClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Graphics\TextClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Font\FontClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Shader\Class\FontShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scripts\Graphics\GraphicsClass.h">
@@ -92,6 +104,18 @@
     <ClInclude Include="Scripts\Graphics\LightClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Scripts\Graphics\BitmapClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Graphics\TextClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Font\FontClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Shader\Class\FontShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Shader\HLSL\Header.hlsli" />
@@ -103,5 +127,6 @@
     <FxCompile Include="Scripts\Shader\HLSL\Color.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\Texture.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\Light.hlsl" />
+    <FxCompile Include="Scripts\Shader\HLSL\Font.hlsl" />
   </ItemGroup>
 </Project>

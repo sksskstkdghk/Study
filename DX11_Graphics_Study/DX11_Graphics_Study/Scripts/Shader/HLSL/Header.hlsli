@@ -6,16 +6,31 @@ cbuffer MatrixBuffer : register(b0)
 	matrix projectionMatrix;
 };
 
+//카메라 상수 버퍼
+cbuffer CameraBuffer : register(b1)
+{
+    float3 cameraPosition;  //카메라 위치
+    
+    float padding;          //남는 잉여 데이터
+};
+
 
 //end VSConstBuffer
 
-//픽셀 셰이더 바인딩 상수 버퍼
+//라이트 상수 버퍼
 cbuffer LightBuffer : register(b0)
 {
     float4 ambientColor;    //주변 광
     float4 diffuseColor;    //빛의 색상
     float3 lightDirection;  //빛의 방향
-    float padding;          //남는 잉여 데이터 크기
+    float specularPower;    //반사 강도
+    float4 specularColor;   //반사색
+};
+
+//텍스트 컬러 상수 버퍼
+cbuffer PixelBuffer : register(b1)
+{
+    float4 fontlColor;
 };
 
 //end PSConstBuffer

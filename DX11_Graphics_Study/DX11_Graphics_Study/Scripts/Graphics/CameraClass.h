@@ -18,6 +18,7 @@ public:
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
 
+	//카메라 세팅
 	void Render();
 	void GetViewMatrix(XMMATRIX& viewMatrix);
 

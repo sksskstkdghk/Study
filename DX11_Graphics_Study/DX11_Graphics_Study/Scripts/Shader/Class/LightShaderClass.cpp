@@ -2,10 +2,9 @@
 
 LightShaderClass::LightShaderClass()
 {
-    __super::ColorShaderClass();
-
     sampleState = nullptr;
     lightBuffer = nullptr;
+	cameraBuffer = nullptr;
 }
 
 LightShaderClass::LightShaderClass(const LightShaderClass& other)
@@ -32,11 +31,13 @@ void LightShaderClass::ShutDown()
     ShutDownShader();
 }
 
-bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX projection, ID3D11ShaderResourceView* texture, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor, XMFLOAT4 ambientColor)
+bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX projection, 
+							  ID3D11ShaderResourceView* texture, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor, XMFLOAT4 ambientColor,
+							  XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower)
 {
     bool result;
 
-    result = SetShaderParameters(deviceContext, world, view, projection, texture, lightDirection, diffuseColor, ambientColor);
+    result = SetShaderParameters(deviceContext, world, view, projection, texture, lightDirection, diffuseColor, ambientColor, cameraPosition, specularColor, specularPower);
     if (!result)
         return false;
 
@@ -52,7 +53,7 @@ bool LightShaderClass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* 
 	ID3D10Blob* pixelShaderBlob;
 
 	D3D11_SAMPLER_DESC samplerDesc;
-	D3D11_BUFFER_DESC lightBufferDesc;
+	D3D11_BUFFER_DESC lightBufferDesc, cameraBufferDesc;
 
 	vertexShaderBlob = nullptr;
 	pixelShaderBlob = nullptr;
@@ -99,6 +100,15 @@ bool LightShaderClass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* 
 	lightBufferDesc.StructureByteStride = 0;
 
 	result = device->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffer);
+
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&cameraBufferDesc, nullptr, &cameraBuffer);
 
 	return true;
 }
@@ -150,6 +160,12 @@ bool LightShaderClass::CreateLayout(ID3D11Device* device, ID3D10Blob** BSBlob, I
 
 void LightShaderClass::ShutDownShader()
 {
+	if (cameraBuffer)
+	{
+		cameraBuffer->Release();
+		cameraBuffer = nullptr;
+	}
+
 	if (lightBuffer)
 	{
 		lightBuffer->Release();
@@ -165,10 +181,13 @@ void LightShaderClass::ShutDownShader()
 	__super::ShutDownShader();
 }
 
-bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMATRIX view, XMMATRIX projection, ID3D11ShaderResourceView* texture, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor, XMFLOAT4 ambientColor)
+bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMATRIX view, XMMATRIX projection, 
+										   ID3D11ShaderResourceView* texture, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor, XMFLOAT4 ambientColor,
+										   XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower)
 {
 	HRESULT result;
 	LightBufferType* dataPtr;
+	CameraBufferType* dataPtr2;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
 	__super::SetShaderParameters(deviceContext, world, view, projection);
@@ -186,12 +205,24 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	dataPtr->diffuseColor = diffuseColor;
 	dataPtr->lightDirection = lightDirection;
 	dataPtr->ambientColor = ambientColor;
-	dataPtr->padding = 0.0f;
+	dataPtr->specularPower = specularPower;
+	dataPtr->specularColor = specularColor;
 
 	//상수 버퍼의 잠금 해제
 	deviceContext->Unmap(lightBuffer, 0);
-
 	deviceContext->PSSetConstantBuffers(0, 1, &lightBuffer);
+
+	result = deviceContext->Map(cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+		return false;
+
+	dataPtr2 = (CameraBufferType*)mappedResource.pData;
+
+	dataPtr2->CameraPosition = cameraPosition;
+	dataPtr2->padding = 0.0f;
+
+	deviceContext->Unmap(cameraBuffer, 1);
+	deviceContext->VSSetConstantBuffers(1, 1, &cameraBuffer);
 
 	return true;
 }
