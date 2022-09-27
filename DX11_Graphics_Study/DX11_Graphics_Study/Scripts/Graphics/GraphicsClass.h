@@ -31,9 +31,7 @@ private:
 	//BitmapClass* bitmap;
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-
-private:
-	bool Render(float rotation);
+	
 
 public:
 	GraphicsClass();
@@ -42,7 +40,7 @@ public:
 
 	bool Init(int screenWidth, int screenHeight, HWND hwnd);
 	void ShutDown();
-	bool Frame();
-
+	bool Frame(int mouseX, int mouseY);
+	bool Render(float rotation = 0.0f);
 };
 

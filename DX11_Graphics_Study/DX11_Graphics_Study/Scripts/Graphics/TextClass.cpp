@@ -260,3 +260,32 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMAT
 
     return true;
 }
+
+bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext)
+{
+    char tempString[16];
+    char mouseString[16];
+    bool result;
+
+    //마우스 x좌표 문자열로 변환
+    _itoa_s(mouseX, tempString, 10);
+
+    strcpy_s(mouseString, "Mouse X: ");
+    strcat_s(mouseString, tempString);
+
+    result = UpdateSentence(sentence01, mouseString, 20, 20, 1.0f, 1.0f, 1.0f, deviceContext);
+    if (!result)
+        return false;
+
+    // 마우스 y좌표 문자열로 변환
+    _itoa_s(mouseY, tempString, 10);
+
+    strcpy_s(mouseString, "Mouse Y: ");
+    strcat_s(mouseString, tempString);
+
+    result = UpdateSentence(sentence02, mouseString, 20, 40, 1.0f, 1.0f, 1.0f, deviceContext);
+    if (!result)
+        return false;
+
+    return true;
+}

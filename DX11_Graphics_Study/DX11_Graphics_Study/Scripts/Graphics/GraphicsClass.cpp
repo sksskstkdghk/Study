@@ -233,22 +233,25 @@ void GraphicsClass::ShutDown()
 	}
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int mouseX, int mouseY)
 {
 	bool result;
-	static float rotation = 0.0f;
 
+	/*static float rotation = 0.0f;
 	rotation += XM_PI * 0.005f;
 	if (rotation > 360.0f)
-		rotation -= 360.0f;
+		rotation -= 360.0f;*/
+	//result = Render(rotation);
 
-	result = Render(rotation);
+	result = text->SetMousePosition(mouseX, mouseY, D3D->getDeviceContext());
 
 	if (!result)
 	{
 		cout << "랜더 실패\n";
 		return false;
 	}
+
+	camera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	return true;
 }

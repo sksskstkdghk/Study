@@ -6,13 +6,21 @@
 //private-------------------------------------------------------------------
 bool SystemClass::Frame()
 {
-	//esc 키 감지 시 종료
-	if (input->isKeyDown(VK_ESCAPE))
-	{
-		return false;
-	}
+	int mouseX, mouseY;
 
-	return graphic->Frame();
+	//키보드, 마우스 상태 갱신
+	if (!input->Frame())
+		return false;
+
+	input->GetMouseLocation(mouseX, mouseY);
+
+	if (!graphic->Frame(mouseX, mouseY))
+		return false;
+
+	if (!graphic->Render())
+		return false;
+
+	return true;
 }
 
 void SystemClass::InitWindows(int& width, int& height)
@@ -148,11 +156,7 @@ bool SystemClass::Init()
 
 	//input 초기화
 	cout << "인풋 생성 성공\n";
-	if (input->Init())
-	{
-		cout << "인풋 초기화 성공\n";
-	}
-	else
+	if (!input->Init(hInstance, hwnd, screenWidth, screenHeight))
 	{
 		cout << "인풋 초기화 실패\n";
 		return false;
@@ -168,11 +172,7 @@ bool SystemClass::Init()
 
 	//graphic 객체 초기화
 	cout << "그래픽 생성 성공\n";
-	if (graphic->Init(screenWidth, screenHeight, hwnd))
-	{
-		cout << "그래픽 초기화 성공\n";
-	}
-	else
+	if (!graphic->Init(screenWidth, screenHeight, hwnd))
 	{
 		cout << "그래픽 초기화 실패\n";
 		return false;
@@ -192,19 +192,22 @@ void SystemClass::Run()
 		//윈도우 메세지 처리
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			//종료 메세지를 받았다면 루프 탈출
-			if (msg.message == WM_QUIT)
-				break;
-
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		//종료 메세지를 받았다면 루프 탈출
+		if (msg.message == WM_QUIT)
+			break;
 		else
 		{
 			//Frame함수 처리
 			if (!Frame())
 				break;
 		}
+
+		if (input->IsEscapePressed() == true)
+			break;
 	}
 
 }
@@ -222,6 +225,7 @@ void SystemClass::ShutDown()
 	//input 반환
 	if (input)
 	{
+		input->ShutDown();
 		delete input;
 		input = nullptr;
 	}
@@ -232,26 +236,7 @@ void SystemClass::ShutDown()
 
 LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
-	switch (umsg)
-	{
-		case WM_KEYDOWN:
-		{
-			//키 눌림
-			input->KeyDown((unsigned int)wparam);
-			return 0;
-		}
-		case WM_KEYUP:
-		{
-			//키 해제
-			input->KeyUp((unsigned int)wparam);
-			return 0;
-		}
-		default:
-		{
-			//그 외
-			return DefWindowProc(hwnd, umsg, wparam, lparam);
-		}
-	}
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
 LRESULT WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)

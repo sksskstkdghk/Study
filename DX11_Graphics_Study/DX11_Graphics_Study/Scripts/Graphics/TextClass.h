@@ -40,6 +40,6 @@ public:
 	bool Init(ID3D11Device* device, ID3D11DeviceContext* deviceContext, HWND hwnd, int screenWidth, int screenHeight, XMMATRIX baseViewMatrix);
 	void ShutDOWN();
 	bool Render(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMATRIX ortho);
-
+	bool SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext);
 };
 
