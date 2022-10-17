@@ -23,7 +23,7 @@
     <ProjectGuid>{7D68D8FA-DCF2-430A-9537-918F53B271F5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DX11GraphicsStudy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -157,6 +157,7 @@
     <ClCompile Include="Scripts\Shader\Class\TextureShaderClass.cpp" />
     <ClCompile Include="Scripts\Model\Texture\TextureClass.cpp" />
     <ClCompile Include="Scripts\Graphics\TextClass.cpp" />
+    <ClCompile Include="Scripts\Sound\SoundClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scripts\Shader\Class\FontShaderClass.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Scripts\Shader\Class\TextureShaderClass.h" />
     <ClInclude Include="Scripts\Model\Texture\TextureClass.h" />
     <ClInclude Include="Scripts\Graphics\TextClass.h" />
+    <ClInclude Include="Scripts\Sound\SoundClass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex.inl" />

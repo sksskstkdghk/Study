@@ -1,6 +1,7 @@
 #include "../DxDefine.h"
 #include "../Input/InputClass.h"
 #include "../Graphics/GraphicsClass.h"
+#include "../Sound/SoundClass.h"
 #include "SystemClass.h"
 
 //private-------------------------------------------------------------------
@@ -178,6 +179,22 @@ bool SystemClass::Init()
 		return false;
 	}
 
+	//sound 객체 생성
+	sound = new SoundClass();
+	if (!sound)
+	{
+		cout << "사운드 생성 실패\n";
+		return false;
+	}
+
+	//sound 객체 초기화
+	cout << "사운드 생성 성공\n";
+	if (!sound->Init(hwnd))
+	{
+		cout << "사운드 초기화 실패\n";
+		return false;
+	}
+
 	cout << "시스템 초기화 성공\n";
 	return true;
 }
@@ -228,6 +245,13 @@ void SystemClass::ShutDown()
 		input->ShutDown();
 		delete input;
 		input = nullptr;
+	}
+
+	if (sound)
+	{
+		sound->ShutDown();
+		delete sound;
+		sound = nullptr;
 	}
 
 	//windows 종료

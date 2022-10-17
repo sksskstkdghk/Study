@@ -1,6 +1,7 @@
 
 class InputClass;
 class GraphicsClass;
+class SoundClass;
 
 class SystemClass
 {
@@ -11,6 +12,7 @@ private:
 
 	InputClass* input = nullptr;
 	GraphicsClass* graphic = nullptr;
+	SoundClass* sound = nullptr;
 
 	bool Frame();
 	void InitWindows(int& Width, int& Height);
