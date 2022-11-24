@@ -30,6 +30,8 @@
 #include <iostream>
 #include <memory.h>
 #include <tchar.h>
+#include <math.h>
+#include <vector>
 
 #define Win_Width	0
 #define Win_Height	0
@@ -43,6 +45,9 @@
 
 using namespace std;
 using namespace DirectX;
+
+typedef XMVECTOR XMPLANE;
+typedef XMFLOAT4 XMCOLOR;
 
 //Initialize
 //#include "Initialize/GraphicsClass.h"

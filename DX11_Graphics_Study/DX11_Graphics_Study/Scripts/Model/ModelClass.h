@@ -1,6 +1,7 @@
 #pragma once
 #include "../DxDefine.h"
 #include "Texture/TextureClass.h"
+#include "Texture/TextureArrayClass.h"
 #include <fstream>
 
 class ModelClass
@@ -23,7 +24,8 @@ private:
 
 	ID3D11Buffer *vertexBuffer, *indexBuffer;
 	int vertexCount, indexCount;
-	TextureClass* textureClass;
+	//TextureClass* textureClass;
+	TextureArrayClass* textureArrayClass;
 	ModelType* model;
 
 public:
@@ -32,11 +34,14 @@ public:
 	~ModelClass();
 
 	bool Init(ID3D11Device* device, const char* modelDataFileName, WCHAR* fileName);
+	bool AddTexture(ID3D11Device* device, WCHAR* fileName);
 	void ShutDown();
 	void Render(ID3D11DeviceContext* deviceContext);
 
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
+
+	vector<ID3D11ShaderResourceView*> GetTextures();
 
 private:
 	bool InitBuffers(ID3D11Device* device);

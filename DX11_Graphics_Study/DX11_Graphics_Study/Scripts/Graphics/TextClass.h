@@ -3,6 +3,9 @@
 #include "../Font/FontClass.h"
 #include "../Shader/Class/FontShaderClass.h"
 
+#include "../System/FpsClass.h"
+#include "../System/CpuClass.h"
+
 class TextClass
 {
 private:
@@ -41,5 +44,9 @@ public:
 	void ShutDOWN();
 	bool Render(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMATRIX ortho);
 	bool SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext);
+	bool SetRenderCount(int renderCount, ID3D11DeviceContext* deviceContext);
+
+	bool SetFps(int fps, ID3D11DeviceContext* deviceContext);
+	bool SetCpu(int cpuClass, ID3D11DeviceContext* deviceContext);
 };
 

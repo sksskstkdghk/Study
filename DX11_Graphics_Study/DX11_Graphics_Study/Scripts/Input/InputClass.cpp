@@ -195,9 +195,12 @@ bool InputClass::Init(HINSTANCE instance, HWND hwnd, int screenWidth, int screen
 //{
 //	keys[index] = false;
 //}
-//
-////현재 키 값이 눌렸는가?
-//bool InputClass::isKeyDown(unsigned int index)
-//{
-//	return keys[index];
-//}
+
+//현재 키 값이 눌렸는가?
+bool InputClass::isKeyDown(unsigned int index)
+{
+	if (keyboardState[index] & 0x80)
+		return true;
+
+	return false;
+}

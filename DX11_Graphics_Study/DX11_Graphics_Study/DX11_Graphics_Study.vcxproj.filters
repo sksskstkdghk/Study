@@ -21,7 +21,7 @@
     <ClCompile Include="Scripts\Input\InputClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Scripts\Initialize\SystemClass.cpp">
+    <ClCompile Include="Scripts\System\SystemClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Scripts\wWinMain.cpp">
@@ -66,6 +66,36 @@
     <ClCompile Include="Scripts\Sound\SoundClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Scripts\Time\TimerClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\System\CpuClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\System\FpsClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Model\ModelListClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Culling\FrustumClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\System\PositionClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Shader\Class\MultiTextureShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\StudyScene\Tuto16Scene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Model\Texture\TextureArrayClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Initialize\SystemClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scripts\Graphics\GraphicsClass.h">
@@ -74,7 +104,7 @@
     <ClInclude Include="Scripts\Input\InputClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Scripts\Initialize\SystemClass.h">
+    <ClInclude Include="Scripts\System\SystemClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Scripts\DxDefine.h">
@@ -122,6 +152,36 @@
     <ClInclude Include="Scripts\Sound\SoundClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Scripts\Time\TimerClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\System\CpuClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\System\FpsClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Model\ModelListClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Culling\FrustumClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\System\PositionClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Shader\Class\MultiTextureShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\StudyScene\Tuto16Scene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Model\Texture\TextureArrayClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Initialize\SystemClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Shader\HLSL\Header.hlsli" />
@@ -134,5 +194,6 @@
     <FxCompile Include="Scripts\Shader\HLSL\Texture.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\Light.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\Font.hlsl" />
+    <FxCompile Include="Scripts\Shader\HLSL\MultiTexture.hlsl" />
   </ItemGroup>
 </Project>

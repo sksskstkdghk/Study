@@ -6,8 +6,10 @@ ModelClass::ModelClass()
 	vertexBuffer = nullptr;
 	indexBuffer = nullptr;
 
-	textureClass = nullptr;
+	//textureClass = nullptr;
 	model = nullptr;
+
+	textureArrayClass = nullptr;
 }
 
 ModelClass::ModelClass(const ModelClass& modelClass)
@@ -32,6 +34,17 @@ bool ModelClass::Init(ID3D11Device* device, const char* modelDataFileName, WCHAR
 		return false;
 
 	result = LoadTexture(device, fileName);
+	if (!result)
+		return false;
+
+	return true;
+}
+
+bool ModelClass::AddTexture(ID3D11Device* device, WCHAR* fileName)
+{
+	bool result;
+
+	result = textureArrayClass->AddTexture(device, fileName);
 	if (!result)
 		return false;
 
@@ -63,7 +76,13 @@ int ModelClass::GetIndexCount()
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
-	return textureClass->GetTexture();
+	return textureArrayClass->GetTexture(0);
+}
+
+vector<ID3D11ShaderResourceView*> ModelClass::GetTextures()
+{
+	//return textureClass->GetTexture();
+	return textureArrayClass->GetTextures();
 }
 
 //정점, 인덱스 버퍼 초기화
@@ -199,25 +218,40 @@ bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* fileName)
 {
 	bool result;
 
-	textureClass = new TextureClass();
+	textureArrayClass = new TextureArrayClass();
+	if (!textureArrayClass)
+		return false;
+
+	result = textureArrayClass->AddTexture(device, fileName);
+	if (!result)
+		return false;
+
+	/*textureClass = new TextureClass();
 	if (!textureClass)
 		return false;
 
 	result = textureClass->Init(device, fileName);
 	if (!result)
-		return false;
+		return false;*/
 
 	return true;
 }
 
 void ModelClass::ReleaseTexture()
 {
-	if (textureClass)
+	if (textureArrayClass)
+	{
+		textureArrayClass->ShutDown();
+		delete textureArrayClass;
+		textureArrayClass = nullptr;
+	}
+
+	/*if (textureClass)
 	{
 		textureClass->ShutDown();
 		delete textureClass;
 		textureClass = nullptr;
-	}
+	}*/
 }
 
 bool ModelClass::LoadModel(const char* modelDataFileName)

@@ -35,9 +35,9 @@ public:
 	bool IsEscapePressed();
 	void GetMouseLocation(int&, int&);
 
-	//void KeyDown(unsigned int index);
-	//void KeyUp(unsigned int index);
+	/*void KeyDown(unsigned int index);
+	void KeyUp(unsigned int index);*/
 	
-	//bool isKeyDown(unsigned int index);
+	bool isKeyDown(unsigned int index);
 };
 

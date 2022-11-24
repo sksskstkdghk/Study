@@ -1,7 +1,13 @@
+#include "CpuClass.h"
+#include "FpsClass.h"
+#include "../Time/TimerClass.h"
+#include "PositionClass.h"
+
 
 class InputClass;
 class GraphicsClass;
 class SoundClass;
+class PositionClass;
 
 class SystemClass
 {
@@ -13,6 +19,11 @@ private:
 	InputClass* input = nullptr;
 	GraphicsClass* graphic = nullptr;
 	SoundClass* sound = nullptr;
+
+	FpsClass* fps;
+	CpuClass* cpuClass;
+	TimerClass* timer;
+	PositionClass* position;
 
 	bool Frame();
 	void InitWindows(int& Width, int& Height);

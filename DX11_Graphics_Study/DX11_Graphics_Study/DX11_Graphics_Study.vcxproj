@@ -23,7 +23,7 @@
     <ProjectGuid>{7D68D8FA-DCF2-430A-9537-918F53B271F5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DX11GraphicsStudy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -101,7 +101,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,6 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Scripts\Model\Texture\TextureArrayClass.cpp" />
+    <ClCompile Include="Scripts\Shader\Class\MultiTextureShaderClass.cpp" />
+    <ClCompile Include="Scripts\StudyScene\Tuto16Scene.cpp" />
+    <ClCompile Include="Scripts\System\PositionClass.cpp" />
+    <ClCompile Include="Scripts\Culling\FrustumClass.cpp" />
+    <ClCompile Include="Scripts\Model\ModelListClass.cpp" />
+    <ClCompile Include="Scripts\System\FpsClass.cpp" />
+    <ClCompile Include="Scripts\System\CpuClass.cpp" />
     <ClCompile Include="Scripts\Shader\Class\FontShaderClass.cpp" />
     <ClCompile Include="Scripts\Font\FontClass.cpp" />
     <ClCompile Include="Scripts\Graphics\BitmapClass.cpp" />
@@ -152,14 +160,23 @@
     <ClCompile Include="Scripts\Graphics\D3DClass.cpp" />
     <ClCompile Include="Scripts\Graphics\GraphicsClass.cpp" />
     <ClCompile Include="Scripts\Input\InputClass.cpp" />
-    <ClCompile Include="Scripts\Initialize\SystemClass.cpp" />
+    <ClCompile Include="Scripts\System\SystemClass.cpp" />
     <ClCompile Include="Scripts\wWinMain.cpp" />
     <ClCompile Include="Scripts\Shader\Class\TextureShaderClass.cpp" />
     <ClCompile Include="Scripts\Model\Texture\TextureClass.cpp" />
     <ClCompile Include="Scripts\Graphics\TextClass.cpp" />
     <ClCompile Include="Scripts\Sound\SoundClass.cpp" />
+    <ClCompile Include="Scripts\Time\TimerClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Scripts\Model\Texture\TextureArrayClass.h" />
+    <ClInclude Include="Scripts\Shader\Class\MultiTextureShaderClass.h" />
+    <ClInclude Include="Scripts\StudyScene\Tuto16Scene.h" />
+    <ClInclude Include="Scripts\System\PositionClass.h" />
+    <ClInclude Include="Scripts\Culling\FrustumClass.h" />
+    <ClInclude Include="Scripts\Model\ModelListClass.h" />
+    <ClInclude Include="Scripts\System\FpsClass.h" />
+    <ClInclude Include="Scripts\System\CpuClass.h" />
     <ClInclude Include="Scripts\Shader\Class\FontShaderClass.h" />
     <ClInclude Include="Scripts\Font\FontClass.h" />
     <ClInclude Include="Scripts\Graphics\BitmapClass.h" />
@@ -173,11 +190,12 @@
     <ClInclude Include="Scripts\DxDefine.h" />
     <ClInclude Include="Scripts\Graphics\GraphicsClass.h" />
     <ClInclude Include="Scripts\Input\InputClass.h" />
-    <ClInclude Include="Scripts\Initialize\SystemClass.h" />
+    <ClInclude Include="Scripts\System\SystemClass.h" />
     <ClInclude Include="Scripts\Shader\Class\TextureShaderClass.h" />
     <ClInclude Include="Scripts\Model\Texture\TextureClass.h" />
     <ClInclude Include="Scripts\Graphics\TextClass.h" />
     <ClInclude Include="Scripts\Sound\SoundClass.h" />
+    <ClInclude Include="Scripts\Time\TimerClass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex.inl" />
@@ -221,6 +239,11 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VS</EntryPointName>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebuggingInformation>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Scripts\Shader\HLSL\MultiTexture.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Scripts\Shader\HLSL\Texture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

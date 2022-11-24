@@ -8,15 +8,31 @@
 bool SystemClass::Frame()
 {
 	int mouseX, mouseY;
+	float x, y;
+
+	timer->Frame();
+	fps->Frame();
+	cpuClass->Frame();
 
 	//키보드, 마우스 상태 갱신
 	if (!input->Frame())
 		return false;
 
 	input->GetMouseLocation(mouseX, mouseY);
+	position->SetFrameTime(timer->GetTime());
 
-	if (!graphic->Frame(mouseX, mouseY))
+	position->TurnLeft(input->isKeyDown(DIK_LEFTARROW));
+	position->TurnRight(input->isKeyDown(DIK_RIGHTARROW));
+	position->TurnUp(input->isKeyDown(DIK_UPARROW));
+	position->TurnDown(input->isKeyDown(DIK_DOWNARROW));
+
+	position->GetRotation(x, y);
+
+	if (!graphic->Frame(x, y))
 		return false;
+
+	/*if (!graphic->Frame(fps->GetFps(), cpuClass->GetCpuPercentage(), timer->GetTime()))
+		return false;*/
 
 	if (!graphic->Render())
 		return false;
@@ -125,7 +141,10 @@ void SystemClass::ShutDownWindows()
 
 SystemClass::SystemClass()
 {
-
+	fps = nullptr;
+	cpuClass = nullptr;
+	timer = nullptr;
+	position = nullptr;
 }
 
 SystemClass::SystemClass(const SystemClass& other)
@@ -195,6 +214,50 @@ bool SystemClass::Init()
 		return false;
 	}
 
+	fps = new FpsClass();
+	if (!fps)
+	{
+		cout << "fps 생성 실패\n";
+		return false;
+	}
+
+	//fps 객체 초기화
+	cout << "fps 생성 성공\n";
+	fps->Init();
+
+	cpuClass = new CpuClass();
+	if (!cpuClass)
+	{
+		cout << "cpu 생성 실패\n";
+		return false;
+	}
+
+	//cpu 객체 초기화
+	cout << "cpu 생성 성공\n";
+	cpuClass->Init();
+
+	timer = new TimerClass();
+	if (!timer)
+	{
+		cout << "timer 생성 실패\n";
+		return false;
+	}
+
+	//timer 객체 초기화
+	cout << "timer 생성 성공\n";
+	if (!timer->Init())
+	{
+		cout << "timer 초기화 실패\n";
+		return false;
+	}
+
+	position = new PositionClass();
+	if (!position)
+	{
+		cout << "position 생성 실패\n";
+		return false;
+	}
+
 	cout << "시스템 초기화 성공\n";
 	return true;
 }
@@ -231,6 +294,31 @@ void SystemClass::Run()
 
 void SystemClass::ShutDown()
 {
+	if (position)
+	{
+		delete position;
+		position = nullptr;
+	}
+
+	if (timer)
+	{
+		delete timer;
+		timer = nullptr;
+	}
+
+	if (cpuClass)
+	{
+		cpuClass->Shutdown();
+		delete cpuClass;
+		cpuClass = nullptr;
+	}
+
+	if (fps)
+	{
+		delete fps;
+		fps = nullptr;
+	}
+
 	//graphic 반환
 	if (graphic)
 	{

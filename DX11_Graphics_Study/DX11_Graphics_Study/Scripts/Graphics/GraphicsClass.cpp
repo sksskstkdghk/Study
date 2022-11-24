@@ -3,46 +3,20 @@
 
 bool GraphicsClass::Render(float rotation)
 {
-	bool result;
-
 	//랜더 전 버퍼 초기화
-	D3D->BeginScene(0.0f, 1.0f, 0.0f, 1.0f);
+	D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	camera->Render();
 
 	camera->GetViewMatrix(viewMatrix);
+
 	D3D->GetWorldMatrix(worldMatrix);
 	D3D->GetProjectionMatrix(projectionMatrix);
-
 	D3D->GetOrthoMatrix(orthoMatrix);
-
-	D3D->TurnZbufferOff();
-
-	D3D->TurnOnAlphaBlending();
-
-	result = text->Render(D3D->getDeviceContext(), worldMatrix, orthoMatrix);
-	if (!result)
-		return false;
-	D3D->TurnOffAlphaBlending();
-	D3D->TurnZbufferOn();
-	/*
-	worldMatrix = XMMatrixIdentity();
-	result = bitmap->Render(D3D->getDeviceContext(), 500, 100);
-	textureClass->Render(D3D->getDeviceContext(), bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, bitmap->GetTexture());
-	
-	D3D->TurnZbufferOn();
-
-	worldMatrix *= XMMatrixRotationY(rotation);
-	worldMatrix *= XMMatrixScaling(0.1f, 0.1f, 0.1f);
 
 	model->Render(D3D->getDeviceContext());
 
-	result = shaderClass->Render(D3D->getDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
-		model->GetTexture(), light->GetDirection(), light->GetDiffuseColor(), light->GetAmbientColor(), 
-		camera->GetPosition(), light->GetSpecularColor(), light->GetSpecularPower());*/
-
-	//if (!result)
-	//	return false;
+	shaderClass->Render(D3D->getDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTextures());
 
 	//버퍼 스왑
 	D3D->EndScene();
@@ -54,11 +28,8 @@ GraphicsClass::GraphicsClass()
 {
 	D3D = nullptr;
 	camera = nullptr;
-	//model = nullptr;
-	//shaderClass = nullptr;
-	//textureClass = nullptr;
-	//light = nullptr;
-	//bitmap = nullptr;
+	shaderClass = nullptr;
+	model = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other)
@@ -101,38 +72,32 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hwnd)
 	camera->Render();
 	camera->GetViewMatrix(baseViewMatrix);
 
-	text = new TextClass();
-	if (!text)
-	{
-		cout << "텍스트 클래스 생성 실패\n";
-		return false;
-	}
-
-	result = text->Init(D3D->GetDevice(), D3D->getDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
-	if (!result)
-	{
-		cout << "텍스트 클래스 초기화 실패\n";
-		MessageBox(hwnd, L"Could not init the Text object.", L"Error", MB_OK);
-		return false;
-	}
-
-	/*model = new ModelClass();
+	model = new ModelClass();
 	if (!model)
 	{
 		cout << "모델 생성 실패\n";
 		return false;
 	}
 
-	WCHAR* temp = (WCHAR*)L"Resources/Mario.png";
-	result = model->Init(D3D->GetDevice(), "Resources/Modeldata/Sphere.txt", temp);
+	WCHAR* temp = (WCHAR*)L"Resources/stone01.dds";
+	result = model->Init(D3D->GetDevice(), "Resources/square.txt", temp);
 	if (!result)
 	{
 		cout << "모델 초기화 실패\n";
-		MessageBox(hwnd, L"Could not init the color shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not init the Model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	shaderClass = new LightShaderClass();
+	temp = (WCHAR*)L"Resources/dirt01.dds";
+	result = model->AddTexture(D3D->GetDevice(), temp);
+	if (!result)
+	{
+		cout << "모델 초기화 실패\n";
+		MessageBox(hwnd, L"Could not init the Model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	shaderClass = new MultiTextureShaderClass();
 	if (!shaderClass)
 	{
 		cout << "셰이더 생성 실패\n";
@@ -147,39 +112,6 @@ bool GraphicsClass::Init(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	light = new LightClass();
-	if (!light)
-	{
-		cout << "조명 생성 실패\n";
-		return false;
-	}
-
-	light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	light->SetDirection(0.0f, 0.0f, 1.0f);
-	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	light->SetSpecularColor(0.0f, 0.0f, 1.0f, 1.0f);
-	light->SetSpecularPower(8.0f);
-	
-
-	textureClass = new TextureShaderClass();
-	textureClass->Init(D3D->GetDevice(), hwnd);
-
-	bitmap = new BitmapClass();
-	if (!bitmap)
-	{
-		cout << "비트맵 생성 실패\n";
-		return false;
-	}
-
-	WCHAR* temp = (WCHAR*)L"Resources/FontData/font.dds";
-	result = bitmap->Init(D3D->GetDevice(), screenWidth, screenHeight, temp, 1200, 50);
-	if (!result)
-	{
-		cout << "비트맵 초기화 실패\n";
-		return false;
-	}
-	*/
-
 	return true;
 }
 
@@ -190,13 +122,7 @@ void GraphicsClass::ShutDown()
 		bitmap->ShutDown();
 		delete bitmap;
 		bitmap = nullptr;
-	}
-
-	if (light)
-	{
-		delete light;
-		light = nullptr;
-	}
+	}*/
 
 	if (shaderClass)
 	{
@@ -210,13 +136,6 @@ void GraphicsClass::ShutDown()
 		model->ShutDown();
 		delete model;
 		model = nullptr;
-	}*/
-
-	if (text)
-	{
-		text->ShutDOWN();
-		delete text;
-		text = nullptr;
 	}
 
 	if (camera)
@@ -233,25 +152,20 @@ void GraphicsClass::ShutDown()
 	}
 }
 
-bool GraphicsClass::Frame(int mouseX, int mouseY)
+bool GraphicsClass::Frame(int fps, int cpuValue, float frameTime)
 {
 	bool result;
 
-	/*static float rotation = 0.0f;
-	rotation += XM_PI * 0.005f;
-	if (rotation > 360.0f)
-		rotation -= 360.0f;*/
-	//result = Render(rotation);
-
-	result = text->SetMousePosition(mouseX, mouseY, D3D->getDeviceContext());
-
-	if (!result)
-	{
-		cout << "랜더 실패\n";
-		return false;
-	}
-
 	camera->SetPosition(0.0f, 0.0f, -10.0f);
+
+	return true;
+}
+
+bool GraphicsClass::Frame(float rotationX, float rotationY)
+{
+	camera->SetPosition(0.0f, 0.0f, -10.0f);
+
+	camera->SetRotation(rotationX, rotationY, 0.0f);
 
 	return true;
 }

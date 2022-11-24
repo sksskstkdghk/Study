@@ -289,3 +289,78 @@ bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* de
 
     return true;
 }
+
+bool TextClass::SetRenderCount(int renderCount, ID3D11DeviceContext* deviceContext)
+{
+    char tempString[16];
+    char mouseString[20];
+    bool result;
+
+    //마우스 x좌표 문자열로 변환
+    _itoa_s(renderCount, tempString, 10);
+
+    strcpy_s(mouseString, "Render Count: ");
+    strcat_s(mouseString, tempString);
+
+    result = UpdateSentence(sentence01, mouseString, 20, 20, 1.0f, 1.0f, 1.0f, deviceContext);
+    if (!result)
+        return false;
+
+    return true;
+}
+
+bool TextClass::SetFps(int fps, ID3D11DeviceContext* deviceContext)
+{
+    char tempString[16];
+    char fpsString[16];
+    float r, g, b;
+    bool result;
+
+    fps = (fps > 9999) ? 9999 : fps;
+
+    _itoa_s(fps, tempString, 10);
+
+    strcpy_s(fpsString, "Fps: ");
+    strcat_s(fpsString, tempString);
+
+    if (fps >= 60)
+    {
+        r = b = 0.0f;
+        g = 1.0f;
+    }
+    else if (fps < 30)
+    {
+        g = b = 0.0f;
+        r = 1.0f;
+    }
+    else
+    {
+        r = g = 1.0f;
+        b = 0.0f;
+    }
+
+    result = UpdateSentence(sentence01, fpsString, 20, 20, r, g, b, deviceContext);
+    if (!result)
+        return false;
+
+    return true;
+}
+
+bool TextClass::SetCpu(int cpuClass, ID3D11DeviceContext* deviceContext)
+{
+    char tempString[16];
+    char cpuString[16];
+    bool result;
+
+    _itoa_s(cpuClass, tempString, 10);
+
+    strcpy_s(cpuString, "Cpu: ");
+    strcat_s(cpuString, tempString);
+    strcat_s(cpuString, "%");
+
+    result = UpdateSentence(sentence02, cpuString, 20, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+    if (!result)
+        return false;
+
+    return true;
+}
