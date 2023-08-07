@@ -183,7 +183,7 @@ bool SystemClass::Init()
 	}
 
 	//graphic 객체 생성
-	graphic = new GraphicsClass();
+	graphic = new Tuto20Scene();
 	if (!graphic)
 	{
 		cout << "그래픽 생성 실패\n";

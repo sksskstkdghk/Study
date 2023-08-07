@@ -26,7 +26,18 @@ bool MultiTextureShaderClass::Init(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
-	result = InitShader(device, hwnd, L"Scripts/Shader/HLSL/MultiTexture.hlsl");
+	result = InitShader(device, hwnd, L"Scripts/Shader/HLSL/NormalMap.hlsl");
+	if (!result)
+		return false;
+
+	return true;
+}
+
+bool MultiTextureShaderClass::Init(const WCHAR* shaderFilename, ID3D11Device* device, HWND hwnd)
+{
+	bool result;
+
+	result = InitShader(device, hwnd, shaderFilename);
 	if (!result)
 		return false;
 

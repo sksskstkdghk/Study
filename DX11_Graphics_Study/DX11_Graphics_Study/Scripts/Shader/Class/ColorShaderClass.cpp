@@ -245,7 +245,6 @@ void ColorShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
 	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBufferType* dataPtr;
 	unsigned int bufferNumber;
 

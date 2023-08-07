@@ -40,7 +40,7 @@ float4 PS(PixelInputType input) : SV_Target
 	texColor01 = Textures[0].Sample(sampleState, input.uv);
 	texColor02 = Textures[1].Sample(sampleState, input.uv);
 
-	//텍스쳐01 * 텍스쳐 02 * 감마 보정 값(모니터 마다 감마 값이 다름.. 이거 어케 구함?? 일단 튜토에 있는 감마 값으로 보정)
+	//텍스쳐01 * 텍스쳐 02 * 감마 보정 값(모니터 마다 감마 값이 다름.. 이거 어케 알아냄?? 일단 튜토에 있는 감마 값으로 보정)
 	blendColor = texColor01 * texColor02 * 2.0;
 
 	blendColor = saturate(blendColor);

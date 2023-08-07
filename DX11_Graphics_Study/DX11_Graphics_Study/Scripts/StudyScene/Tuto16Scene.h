@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../Graphics/D3DClass.h"
-#include "../Graphics/CameraClass.h"
 #include "../Graphics/GraphicsClass.h"
 #include "../Model/ModelClass.h"
 #include "../Model/ModelListClass.h"
@@ -20,7 +18,7 @@ class Tuto16Scene : public GraphicsClass
 private:
 	//ColorShaderClass* colorShader;
 	//TextureShaderClass* textureClass;
-	ModelClass* model;
+	//ModelClass* model;
 	ModelListClass* modelList;
 	LightShaderClass* shaderClass;
 	LightClass* light;

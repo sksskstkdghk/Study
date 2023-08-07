@@ -3,7 +3,7 @@
 
 class TextureShaderClass : public ColorShaderClass
 {
-private:
+protected:
 	ID3D11SamplerState* samplerState;
 
 public:

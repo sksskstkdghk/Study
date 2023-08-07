@@ -23,6 +23,7 @@
 
 #define WIN32_LEAN_AND_MEAN	//거의 사용되지 않는 내용은 헤더에서 자동 제거
 #define DIRECTINPUT_VERSION 0x0800	//dxInput버전
+#define _USE_MATH_DEFINES	//math.h 사용전 선언해야 pi같은 디파인 값 사용 가능
 
 #include <Windows.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@
 #include <tchar.h>
 #include <math.h>
 #include <vector>
+//#include <numbers>
 
 #define Win_Width	0
 #define Win_Height	0

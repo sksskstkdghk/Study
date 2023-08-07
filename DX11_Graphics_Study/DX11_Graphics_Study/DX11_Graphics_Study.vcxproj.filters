@@ -93,7 +93,13 @@
     <ClCompile Include="Scripts\Model\Texture\TextureArrayClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Scripts\Initialize\SystemClass.cpp">
+    <ClCompile Include="Scripts\StudyScene\Tuto17Scene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\StudyScene\Tuto20Scene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Shader\Class\BumpMapShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -179,7 +185,13 @@
     <ClInclude Include="Scripts\Model\Texture\TextureArrayClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Scripts\Initialize\SystemClass.h">
+    <ClInclude Include="Scripts\StudyScene\Tuto17Scene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\StudyScene\Tuto20Scene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Shader\Class\BumpMapShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -195,5 +207,6 @@
     <FxCompile Include="Scripts\Shader\HLSL\Light.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\Font.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\MultiTexture.hlsl" />
+    <FxCompile Include="Scripts\Shader\HLSL\NormalMap.hlsl" />
   </ItemGroup>
 </Project>

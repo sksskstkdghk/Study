@@ -20,6 +20,8 @@ protected:
 	ID3D11InputLayout* layout;
 	ID3D11Buffer* matrixBuffer;
 
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
 public:
 	ColorShaderClass();
 	ColorShaderClass(const ColorShaderClass& colorShader);

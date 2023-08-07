@@ -13,9 +13,20 @@ private:
 		//XMFLOAT4 color;
 		XMFLOAT2 uv;
 		XMFLOAT3 normal;
+		XMFLOAT3 tangent;
+		XMFLOAT3 binormal;
 	};
 
 	struct ModelType
+	{
+		float x, y, z;
+		float u, v;
+		float nx, ny, nz;	//≥Î∏ª
+		float tx, ty, tz;	//≈∫¡®∆Æ
+		float bx, by, bz;	//πŸ¿Ã≥Î∏ª
+	};
+
+	struct TempVertexType
 	{
 		float x, y, z;
 		float u, v;
@@ -53,5 +64,9 @@ private:
 
 	bool LoadModel(const char* modelDataFileName);
 	void ReleaseModel();
+
+	void CalculateModelVectors();
+	void CalculateTnB(TempVertexType* vertexs, XMFLOAT3& tangent, XMFLOAT3& binormal);
+	void calculateNormal(XMFLOAT3 tangent, XMFLOAT3 binormal, XMFLOAT3& normal);
 };
 

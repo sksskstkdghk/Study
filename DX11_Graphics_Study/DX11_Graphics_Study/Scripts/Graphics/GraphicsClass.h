@@ -16,11 +16,11 @@ class GraphicsClass
 protected:
 	D3DClass* D3D;
 	CameraClass* camera;
+	ModelClass* model;
 
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-private:
-	ModelClass* model;
-	MultiTextureShaderClass* shaderClass;
+
+	void GetMatrix();
 
 public:
 	GraphicsClass();
@@ -29,9 +29,11 @@ public:
 
 	bool virtual Init(int screenWidth, int screenHeight, HWND hwnd);
 	void virtual ShutDown();
-	//bool Frame(int mouseX, int mouseY);
+	bool virtual Render(float rotation);
+	bool virtual Render();
+
+	//자식에서 필요할 경우 오버라이드해서 사용
 	bool virtual Frame(int fps, int cpuValue, float frameTime);
 	bool virtual Frame(float rotationX, float rotationY);
-	bool virtual Render(float rotation = 0.0f);
 };
 

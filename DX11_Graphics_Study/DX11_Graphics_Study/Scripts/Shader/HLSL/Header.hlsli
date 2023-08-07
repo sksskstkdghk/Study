@@ -27,6 +27,12 @@ cbuffer LightBuffer : register(b0)
     float4 specularColor;   //반사색
 };
 
+cbuffer SimpleLightBuffer : register(b0)
+{
+    float4 simpleDiffuseColor; //빛의 색상
+    float3 simpleLightDirection; //빛의 방향
+};
+
 //텍스트 컬러 상수 버퍼
 cbuffer PixelBuffer : register(b1)
 {

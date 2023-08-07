@@ -3,6 +3,8 @@
 
 bool Tuto16Scene::Render(float rotation)
 {
+	//씬 용 임시 변수들
+	//별로 안 좋지만 공부용이고 귀찮으니 걍 여기박자
 	bool renderModel, result;
 
 	int modelCount, renderCount;
@@ -14,12 +16,6 @@ bool Tuto16Scene::Render(float rotation)
 	D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	camera->Render();
-
-	camera->GetViewMatrix(viewMatrix);
-
-	D3D->GetWorldMatrix(worldMatrix);
-	D3D->GetProjectionMatrix(projectionMatrix);
-	D3D->GetOrthoMatrix(orthoMatrix);
 
 	frustum->ConstructFrustum(SCREEN_DEPTH, projectionMatrix, viewMatrix);
 

@@ -3,11 +3,21 @@
 #include "../Time/TimerClass.h"
 #include "PositionClass.h"
 
+#pragma region 씬 인클루드 집합
+//#include "Scripts/StudyScene/Tuto17Scene.h"
+#include "Scripts/StudyScene/Tuto20Scene.h"
+#pragma endregion
+
+
+
+#pragma region 전방선언
 
 class InputClass;
 class GraphicsClass;
 class SoundClass;
 class PositionClass;
+
+#pragma endregion
 
 class SystemClass
 {
@@ -45,5 +55,6 @@ public:
 
 };
 
+//윈도우 프로세스 함수
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam);
 static SystemClass* AppHandle = 0;
