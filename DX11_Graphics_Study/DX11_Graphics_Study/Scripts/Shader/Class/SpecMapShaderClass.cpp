@@ -1,7 +1,7 @@
 #include "../../DxDefine.h"
-#include "BumpMapShaderClass.h"
+#include "SpecMapShaderClass.h"
 
-bool BumpMapShaderClass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* shaderFilename)
+bool SpecMapShaderClass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR* shaderFilename)
 {
 	HRESULT result;
 	ID3D10Blob* vertexShaderBlob;
@@ -10,6 +10,7 @@ bool BumpMapShaderClass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR
 	D3D11_SAMPLER_DESC samplerDesc;
 
 	D3D11_BUFFER_DESC lightBufferDesc;
+	D3D11_BUFFER_DESC cameraBufferDesc;
 
 	vertexShaderBlob = nullptr;
 	pixelShaderBlob = nullptr;
@@ -62,10 +63,24 @@ bool BumpMapShaderClass::InitShader(ID3D11Device* device, HWND hwnd, const WCHAR
 		return false;
 	}
 
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&cameraBufferDesc, nullptr, &cameraBuffer);
+	if (FAILED(result))
+	{
+		cout << "카메라 버퍼 생성 실패\n";
+		return false;
+	}
+
 	return true;
 }
 
-bool BumpMapShaderClass::CreateLayout(ID3D11Device* device, ID3D10Blob** BSBlob, ID3D10Blob** PSBlob)
+bool SpecMapShaderClass::CreateLayout(ID3D11Device* device, ID3D10Blob** BSBlob, ID3D10Blob** PSBlob)
 {
 	HRESULT result;
 
@@ -128,9 +143,14 @@ bool BumpMapShaderClass::CreateLayout(ID3D11Device* device, ID3D10Blob** BSBlob,
 	return true;
 }
 
-void BumpMapShaderClass::ShutDownShader()
+void SpecMapShaderClass::ShutDownShader()
 {
-	//라이트 버퍼 해제
+	if (cameraBuffer)
+	{
+		cameraBuffer->Release();
+		cameraBuffer = nullptr;
+	}
+
 	if (lightBuffer)
 	{
 		lightBuffer->Release();
@@ -140,54 +160,81 @@ void BumpMapShaderClass::ShutDownShader()
 	__super::ShutDownShader();
 }
 
-bool BumpMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMATRIX view, XMMATRIX projection, vector<ID3D11ShaderResourceView*> textures, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor)
+bool SpecMapShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, XMMATRIX world, XMMATRIX view, XMMATRIX projection, vector<ID3D11ShaderResourceView*> textures,
+	XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor, XMFLOAT3 camPos, XMFLOAT4 specColor, float specPower)
 {
 	bool result;
 	HRESULT hResult;
-	LightBufferType* dataPtr;
+
+	LightBufferType* lightData;
+	CameraBufferType* camData;
 
 	result = __super::SetShaderParameters(deviceContext, world, view, projection, textures);
 	if (!result)
 		return false;
 
+#pragma region 라이트 상수 버퍼 세팅
 	//상수 버퍼 사용을 위해 잠굼
 	hResult = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(hResult))
 		return false;
 
 	//데이터 받아옴
-	dataPtr = (LightBufferType*)mappedResource.pData;
+	lightData = (LightBufferType*)mappedResource.pData;
 
 	//데이터 할당
-	dataPtr->diffuseColor = diffuseColor;
-	dataPtr->lightDirection = lightDirection;
+	lightData->ambientColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	lightData->diffuseColor = diffuseColor;
+	lightData->lightDirection = lightDirection;
+	lightData->specularPower = specPower;
+	lightData->specularColor = specColor;
 
 	//다 사용했다면 잠금 해제
 	deviceContext->Unmap(lightBuffer, 0);
-
 	deviceContext->PSSetConstantBuffers(0, 1, &lightBuffer);
+#pragma endregion
+#pragma region 카메라 상수 버퍼 세팅
+	//상수 버퍼 사용을 위해 잠굼
+	hResult = deviceContext->Map(cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(hResult))
+		return false;
+
+	//데이터 받아옴
+	camData = (CameraBufferType*)mappedResource.pData;
+
+	//데이터 할당
+	camData->CameraPosition = camPos;
+
+	//다 사용했다면 잠금 해제
+	deviceContext->Unmap(cameraBuffer, 0);
+	deviceContext->VSSetConstantBuffers(1, 1, &cameraBuffer);
+#pragma endregion
 
 	return true;
 }
 
-BumpMapShaderClass::BumpMapShaderClass()
+SpecMapShaderClass::SpecMapShaderClass()
 {
 	lightBuffer = nullptr;
+	cameraBuffer = nullptr;
 }
 
-BumpMapShaderClass::BumpMapShaderClass(const BumpMapShaderClass& other)
+SpecMapShaderClass::SpecMapShaderClass(const SpecMapShaderClass& other)
+{
+
+}
+
+SpecMapShaderClass::~SpecMapShaderClass()
 {
 }
 
-BumpMapShaderClass::~BumpMapShaderClass()
-{
-}
-
-bool BumpMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX projection, vector<ID3D11ShaderResourceView*> textures, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor)
+bool SpecMapShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX projection, vector<ID3D11ShaderResourceView*> textures,
+	XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor, XMFLOAT3 camPos, XMFLOAT4 specColor, float specPower)
 {
 	bool result;
 
-	result = SetShaderParameters(deviceContext, world, view, projection, textures, lightDirection, diffuseColor);
+	result = SetShaderParameters(deviceContext, world, view, projection, textures, lightDirection, diffuseColor, camPos, specColor, specPower);
+
 	if (!result)
 		return false;
 

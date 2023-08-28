@@ -82,7 +82,7 @@ float4 PS(PixelInputType input) : SV_Target
         
         //정반사광 총량
         //dot(반사벡터, 정점이 카메라를 보는 방향)^반사 강도
-        //일반적으로는 반사하는 빛의 색을 곱하지만 없다면 뺀다.(반사 라이트 계산이 없어서 그런 듯??)
+        //일반적으로는 반사하는 빛의 색을 곱하지만 없다면 뺀다.(백색광이면 어차피 같은 값이기 때문)
         //specular = specularColor * pow(saturate(dot(reflection, input.ViewDirection)), specularPower);
         specular = pow(saturate(dot(reflection, input.ViewDirection)), specularPower);
     }

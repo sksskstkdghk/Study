@@ -5,7 +5,8 @@
 
 #pragma region 씬 인클루드 집합
 //#include "Scripts/StudyScene/Tuto17Scene.h"
-#include "Scripts/StudyScene/Tuto20Scene.h"
+//#include "Scripts/StudyScene/Tuto20Scene.h"
+#include "Scripts/StudyScene/Tuto21Scene.h"
 #pragma endregion
 
 

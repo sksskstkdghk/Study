@@ -11,7 +11,7 @@ cbuffer CameraBuffer : register(b1)
 {
     float3 cameraPosition;  //카메라 위치
     
-    float padding;          //남는 잉여 데이터
+    float Padding01;          //남는 잉여 데이터
 };
 
 
@@ -31,6 +31,8 @@ cbuffer SimpleLightBuffer : register(b0)
 {
     float4 simpleDiffuseColor; //빛의 색상
     float3 simpleLightDirection; //빛의 방향
+    
+    float padding02; //남는 잉여 데이터
 };
 
 //텍스트 컬러 상수 버퍼

@@ -170,6 +170,8 @@
     <ClCompile Include="Scripts\Time\TimerClass.cpp" />
     <ClCompile Include="Scripts\StudyScene\Tuto17Scene.cpp" />
     <ClCompile Include="Scripts\StudyScene\Tuto20Scene.cpp" />
+    <ClCompile Include="Scripts\StudyScene\Tuto21Scene.cpp" />
+    <ClCompile Include="Scripts\Shader\Class\SpecMapShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scripts\Shader\Class\BumpMapShaderClass.h" />
@@ -202,6 +204,8 @@
     <ClInclude Include="Scripts\Time\TimerClass.h" />
     <ClInclude Include="Scripts\StudyScene\Tuto17Scene.h" />
     <ClInclude Include="Scripts\StudyScene\Tuto20Scene.h" />
+    <ClInclude Include="Scripts\StudyScene\Tuto21Scene.h" />
+    <ClInclude Include="Scripts\Shader\Class\SpecMapShaderClass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex.inl" />
@@ -259,6 +263,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+    </FxCompile>
+    <FxCompile Include="Scripts\Shader\HLSL\SpecularMap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="Scripts\Shader\HLSL\Texture.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

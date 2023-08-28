@@ -5,7 +5,7 @@ bool MultiTextureShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceCon
 {
 	ColorShaderClass::SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
 
-	deviceContext->PSSetShaderResources(0, 2, &textures[0]);
+	deviceContext->PSSetShaderResources(0, textures.size(), &textures[0]);
 
 	return true;
 }

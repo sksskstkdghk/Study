@@ -19,7 +19,7 @@ public:
 	Tuto20Scene(const Tuto20Scene& other);
 	~Tuto20Scene();
 
-	bool Init(int screenWidth, int screenHeight, HWND hwnd);
+	bool Init(int screenWidth, int screenHeight, HWND hwnd) override;
 	void ShutDown();
 	bool Frame();
 	bool Render() override;
