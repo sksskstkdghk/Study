@@ -6,6 +6,8 @@
 #include "../Shader/Class/MultiTextureShaderClass.h"
 
 
+
+
 const bool FULL_SCREEN = false;		//전체화면 여부
 const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;	//최대 보여지는 z축 거리
@@ -21,6 +23,10 @@ protected:
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 
 	void GetMatrix();
+	void CreateModel(const char* modelDataFileName, WCHAR* fileName);
+
+	bool RenderToTexture();
+	bool RenderScene();
 
 public:
 	GraphicsClass();

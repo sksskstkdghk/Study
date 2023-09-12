@@ -15,6 +15,32 @@ void GraphicsClass::GetMatrix()
 {
 }
 
+void GraphicsClass::CreateModel(const char* modelDataFileName, WCHAR* fileName)
+{
+	model = new ModelClass();
+	if (!model)
+	{
+		cout << "모델 생성 실패\n";
+		return;
+	}
+
+	if (!model->Init(D3D->GetDevice(), modelDataFileName, fileName))
+	{
+		cout << "모델 초기화 실패\n";
+		return;
+	}
+}
+
+bool GraphicsClass::RenderToTexture()
+{
+	return false;
+}
+
+bool GraphicsClass::RenderScene()
+{
+	return false;
+}
+
 GraphicsClass::GraphicsClass()
 {
 	D3D = nullptr;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../Graphics/GraphicsClass.h"
 #include "../Graphics/LightClass.h"
 #include "../Shader/Class/SpecMapShaderClass.h"

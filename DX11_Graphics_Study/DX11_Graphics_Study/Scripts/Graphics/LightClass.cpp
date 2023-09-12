@@ -2,6 +2,11 @@
 
 LightClass::LightClass()
 {
+    SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+    SetAmbientColor(1.0f, 1.0f, 1.0f, 1.0f);
+    SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+    SetDirection(0.0f, 0.0f, 1.0f);
+    SetSpecularPower(8.0f);
 }
 
 LightClass::LightClass(const LightClass& other)
