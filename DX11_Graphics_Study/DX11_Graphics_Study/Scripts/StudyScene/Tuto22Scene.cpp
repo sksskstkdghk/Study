@@ -100,7 +100,7 @@ bool Tuto22Scene::Init(int screenWidth, int screenHeight, HWND hwnd)
 	if (!debugWindow)
 		return false;
 
-	result = debugWindow->Init(D3D->GetDevice(), screenWidth, screenHeight, 300, 600);
+	result = debugWindow->Init(D3D->GetDevice(), 300, 600);
 	if (!result)
 		return false;
 

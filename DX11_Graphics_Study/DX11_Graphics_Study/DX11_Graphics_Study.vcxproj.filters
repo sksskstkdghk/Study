@@ -111,7 +111,16 @@
     <ClCompile Include="Scripts\StudyScene\Tuto22Scene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Scripts\Graphics\RenderTextureClass.cpp">
+    <ClCompile Include="Scripts\Graphics\DebugWindowClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Model\Texture\RenderTextureClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\StudyScene\Tuto23Scene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Shader\Class\FogShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -215,7 +224,16 @@
     <ClInclude Include="Scripts\StudyScene\Tuto22Scene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Scripts\Graphics\RenderTextureClass.h">
+    <ClInclude Include="Scripts\Graphics\DebugWindowClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Model\Texture\RenderTextureClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\StudyScene\Tuto23Scene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Shader\Class\FogShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -233,5 +251,6 @@
     <FxCompile Include="Scripts\Shader\HLSL\MultiTexture.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\NormalMap.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\SpecularMap.hlsl" />
+    <FxCompile Include="Scripts\Shader\HLSL\Fog.hlsl" />
   </ItemGroup>
 </Project>

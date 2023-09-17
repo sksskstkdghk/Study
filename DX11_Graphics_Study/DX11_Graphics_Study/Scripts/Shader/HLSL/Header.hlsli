@@ -11,7 +11,7 @@ cbuffer CameraBuffer : register(b1)
 {
     float3 cameraPosition;  //카메라 위치
     
-    float Padding01;          //남는 잉여 데이터
+    float padding01;          //남는 잉여 데이터
 };
 
 
