@@ -34,7 +34,7 @@ bool Tuto24Scene::Init(int screenWidth, int screenHeight, HWND hwnd)
         return false;
 
     //이 평면은 y축이 0아래인 모든 것을 그리지 않음
-    clipPlane = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+    clipPlane = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 
     return true;
 }

@@ -73,6 +73,17 @@ ClipplaneShaderClass::~ClipplaneShaderClass()
 {
 }
 
+bool ClipplaneShaderClass::Init(ID3D11Device* device, HWND hwnd)
+{
+	bool result;
+
+	result = InitShader(device, hwnd, L"Scripts/Shader/HLSL/ClipPlane.hlsl");
+	if (!result)
+		return false;
+
+	return true;
+}
+
 bool ClipplaneShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX projection, vector<ID3D11ShaderResourceView*> textures, XMFLOAT4 plane)
 {
 	bool result;

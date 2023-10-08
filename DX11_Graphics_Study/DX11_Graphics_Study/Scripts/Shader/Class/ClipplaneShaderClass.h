@@ -22,6 +22,7 @@ public:
 	ClipplaneShaderClass(const ClipplaneShaderClass& other);
 	~ClipplaneShaderClass();
 
+	bool Init(ID3D11Device* device, HWND hwnd);
 	bool Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX world, XMMATRIX view, XMMATRIX projection, vector<ID3D11ShaderResourceView*> textures, XMFLOAT4 plane);
 };
 

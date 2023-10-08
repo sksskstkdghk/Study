@@ -6,5 +6,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerAmpDefaultAccelerator>{ADEFF70D-84BF-47A1-91C3-FF6B0FC71218}</LocalDebuggerAmpDefaultAccelerator>
   </PropertyGroup>
 </Project>
