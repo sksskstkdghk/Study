@@ -14,6 +14,11 @@ cbuffer CameraBuffer : register(b1)
     float padding01;          //남는 잉여 데이터
 };
 
+//클리핑 용 평면 상수 버퍼
+cbuffer ClipBuffer : register(b2)
+{
+    float4 clipplane;
+};
 
 //end VSConstBuffer
 
@@ -40,5 +45,3 @@ cbuffer PixelBuffer : register(b1)
 {
     float4 fontlColor;
 };
-
-//end PSConstBuffer

@@ -246,7 +246,6 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 {
 	HRESULT result;
 	MatrixBufferType* dataPtr;
-	unsigned int bufferNumber;
 
 	//행렬을 transpos하여 셰이더에서 사용할 수 있게 한다.
 	worldMatrix = XMMatrixTranspose(worldMatrix);
@@ -269,11 +268,8 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	//상수 버퍼의 잠금 해제
 	deviceContext->Unmap(matrixBuffer, 0);
 
-	//정점 셰이더에서의 상수 버퍼의 위치 설정
-	bufferNumber = 0;
-
 	//정점 셰이더의 상수 버퍼를 바뀐 값으로 교체
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &matrixBuffer);
 
 	return true;
 }

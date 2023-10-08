@@ -8,7 +8,8 @@
 //#include "Scripts/StudyScene/Tuto20Scene.h"
 //#include "Scripts/StudyScene/Tuto21Scene.h"
 //#include "Scripts/StudyScene/Tuto22Scene.h"
-#include "Scripts/StudyScene/Tuto23Scene.h"
+//#include "Scripts/StudyScene/Tuto23Scene.h"
+#include "Scripts/StudyScene/Tuto24Scene.h"
 #pragma endregion
 
 

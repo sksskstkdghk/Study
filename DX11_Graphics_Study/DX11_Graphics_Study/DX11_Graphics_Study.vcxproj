@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Scripts\Shader\Class\ClipplaneShaderClass.cpp" />
     <ClCompile Include="Scripts\Shader\Class\FogShaderClass.cpp" />
     <ClCompile Include="Scripts\Graphics\DebugWindowClass.cpp" />
     <ClCompile Include="Scripts\Model\Texture\RenderTextureClass.cpp" />
@@ -177,8 +178,10 @@
     <ClCompile Include="Scripts\Shader\Class\SpecMapShaderClass.cpp" />
     <ClCompile Include="Scripts\StudyScene\Tuto22Scene.cpp" />
     <ClCompile Include="Scripts\StudyScene\Tuto23Scene.cpp" />
+    <ClCompile Include="Scripts\StudyScene\Tuto24Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Scripts\Shader\Class\ClipplaneShaderClass.h" />
     <ClInclude Include="Scripts\Shader\Class\FogShaderClass.h" />
     <ClInclude Include="Scripts\Graphics\DebugWindowClass.h" />
     <ClInclude Include="Scripts\Model\Texture\RenderTextureClass.h" />
@@ -216,12 +219,24 @@
     <ClInclude Include="Scripts\Shader\Class\SpecMapShaderClass.h" />
     <ClInclude Include="Scripts\StudyScene\Tuto22Scene.h" />
     <ClInclude Include="Scripts\StudyScene\Tuto23Scene.h" />
+    <ClInclude Include="Scripts\StudyScene\Tuto24Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DirectXTex.inl" />
     <None Include="Scripts\Shader\HLSL\Header.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Scripts\Shader\HLSL\ClipPlane.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+    </FxCompile>
     <FxCompile Include="Scripts\Shader\HLSL\Color.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
