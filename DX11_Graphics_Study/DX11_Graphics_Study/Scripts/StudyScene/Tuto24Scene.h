@@ -7,7 +7,6 @@
 class Tuto24Scene : public GraphicsClass
 {
 private:
-	//FogShaderClass* fogShaderClass;
 	float rotation;
 
 	ClipplaneShaderClass* clipplaneShaderClass;

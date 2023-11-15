@@ -5,7 +5,7 @@ class CameraClass
 private:
 	float positionX, positionY, positionZ;
 	float rotationX, rotationY, rotationZ;
-	XMMATRIX viewMatrix;
+	XMMATRIX viewMatrix, reflectionViewMatrix;
 
 public:
 	CameraClass();
@@ -19,8 +19,11 @@ public:
 	XMFLOAT3 GetRotation();
 
 	//카메라 세팅
+	void RenderReflection(float height);
 	void Render();
+
 	void GetViewMatrix(XMMATRIX& viewMatrix);
+	XMMATRIX GetReflectionViewMatrix() { return reflectionViewMatrix; }
 
 };
 

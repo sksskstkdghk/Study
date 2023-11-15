@@ -129,6 +129,12 @@
     <ClCompile Include="Scripts\Shader\Class\ClipplaneShaderClass.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Scripts\StudyScene\Tuto27Scene.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\Shader\Class\ReflectionShaderClass.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scripts\Graphics\GraphicsClass.h">
@@ -248,6 +254,12 @@
     <ClInclude Include="Scripts\Shader\Class\ClipplaneShaderClass.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Scripts\StudyScene\Tuto27Scene.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\Shader\Class\ReflectionShaderClass.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Shader\HLSL\Header.hlsli" />
@@ -265,5 +277,6 @@
     <FxCompile Include="Scripts\Shader\HLSL\SpecularMap.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\Fog.hlsl" />
     <FxCompile Include="Scripts\Shader\HLSL\ClipPlane.hlsl" />
+    <FxCompile Include="Scripts\Shader\HLSL\Reflection.hlsl" />
   </ItemGroup>
 </Project>

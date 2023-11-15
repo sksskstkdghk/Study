@@ -20,6 +20,11 @@ cbuffer ClipBuffer : register(b2)
     float4 clipplane;
 };
 
+cbuffer ReflectionBuffer : register(b3)
+{
+    matrix reflectionMatrix;
+}
+
 //end VSConstBuffer
 
 //라이트 상수 버퍼

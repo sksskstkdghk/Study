@@ -16,7 +16,7 @@ public:
 	void ShutDown();
 
 	void SetRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depth);
-	void ClearRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depth, float r, float g, float b, float a);
+	void ClearRenderTarget(ID3D11DeviceContext* deviceContext, ID3D11DepthStencilView* depth, float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 
 
 	ID3D11ShaderResourceView* GetSRV() { return SRV; }

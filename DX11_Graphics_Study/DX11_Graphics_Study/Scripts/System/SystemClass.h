@@ -9,7 +9,8 @@
 //#include "Scripts/StudyScene/Tuto21Scene.h"
 //#include "Scripts/StudyScene/Tuto22Scene.h"
 //#include "Scripts/StudyScene/Tuto23Scene.h"
-#include "Scripts/StudyScene/Tuto24Scene.h"
+//#include "Scripts/StudyScene/Tuto24Scene.h"
+#include "Scripts/StudyScene/Tuto27Scene.h"
 #pragma endregion
 
 
